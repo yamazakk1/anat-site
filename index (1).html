@@ -1,0 +1,4994 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Анатомия — бесконечный тренажёр</title>
+  <style>
+    :root {font-family: system-ui,-apple-system,"Segoe UI",sans-serif;color:#202a3a;background:#f5f7fb;font-synthesis:none}
+    * {box-sizing:border-box}
+    body {margin:0;min-height:100vh;padding:44px 18px;display:flex;justify-content:center;align-items:flex-start}
+    .shell {width:min(100%,760px)}
+    .top {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+    h1 {font-size:clamp(23px,4vw,32px);margin:0 0 6px;font-weight:750;letter-spacing:-.04em}
+    .subtitle {margin:0;color:#66748a;font-size:14px}
+    .reset {border:1px solid #d7deea;border-radius:10px;color:#4a5b74;background:#fff;cursor:pointer;padding:10px 14px;font:inherit;font-size:13px}
+    .reset:hover {background:#f0f4fa}
+    .filters{display:flex;gap:10px;margin:0 0 16px;flex-wrap:wrap}.filters label{font-size:12px;color:#66748a;display:flex;flex-direction:column;gap:5px;flex:1;min-width:170px}.filters select{width:100%;font:inherit;padding:10px 12px;border:1px solid #d7deea;border-radius:10px;background:white;color:#27344a}
+    .topic-filter{position:relative;flex:1;min-width:170px;font-size:12px;color:#66748a}
+    .topic-filter>span{display:block;margin-bottom:5px}
+    .topic-filter details{position:relative}
+    .topic-filter summary{list-style:none;cursor:pointer;background:#fff;color:#27344a;border:1px solid #d7deea;border-radius:10px;padding:10px 34px 10px 12px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+    .topic-filter summary::-webkit-details-marker{display:none}
+    .topic-filter summary::after{content:"⌄";position:absolute;right:12px;top:8px;font-size:19px;color:#65738c}
+    .topic-filter details[open] summary{border-color:#5679df;border-radius:10px 10px 0 0}
+    .topic-panel{position:absolute;z-index:10;top:100%;left:0;right:0;min-width:min(320px,85vw);max-height:330px;overflow:auto;background:#fff;border:1px solid #d7deea;border-top:0;border-radius:0 0 12px 12px;box-shadow:0 15px 30px #23355326;padding:10px}
+    .topic-actions{display:flex;gap:8px;margin-bottom:8px}
+    .topic-actions button{cursor:pointer;background:#edf2ff;border:0;border-radius:7px;padding:7px 10px;font-size:12px;color:#365fd3}
+    .topic-option{display:flex!important;flex-direction:row!important;align-items:center;gap:10px!important;padding:8px 6px;min-width:0!important;font-size:13px!important;color:#27344a!important;cursor:pointer}
+    .topic-option:hover{background:#f5f7fb;border-radius:6px}
+    .topic-option input{width:16px;height:16px;accent-color:#426dda;flex-shrink:0}
+    .mistakes-tools{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px;font-size:13px;color:#66748a}.mistakes-tools strong{color:#365fd3}.clear-mistakes{border:1px solid #d7deea;border-radius:9px;padding:7px 11px;background:#fff;color:#52617a;cursor:pointer;font:inherit}.clear-mistakes:disabled{opacity:.4;cursor:not-allowed}.empty{background:#fff;border:1px solid #e4e9f1;padding:28px;border-radius:15px;color:#52617a;line-height:1.6}.choice.picked{background:#eaf0ff;border-color:#5679df}.mode{font-size:13px;color:#526a93;margin:-15px 0 17px;font-weight:600}.source-line{margin-top:16px;color:#8894a5;font-size:12px}.submit{border:0;border-radius:11px;padding:13px 17px;font:inherit;font-weight:700;cursor:pointer;background:#426dda;color:white}.submit:disabled{opacity:.45;cursor:not-allowed}
+    .stats {display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+    .stat {background:#fff;border:1px solid #e6eaf1;border-radius:14px;padding:14px 17px}
+    .stat-label {font-size:12px;color:#758198;margin-bottom:5px}
+    .stat-value {font-size:24px;font-weight:750;font-variant-numeric:tabular-nums}
+    .card {background:white;border:1px solid #e4e9f1;border-radius:20px;padding:clamp(20px,4vw,32px);box-shadow:0 14px 42px rgba(32,51,82,.045)}
+    .meta {display:flex;align-items:center;justify-content:space-between;color:#6c7a90;font-size:13px;gap:15px;margin-bottom:16px}
+    .tag {border-radius:20px;background:#f0f4ff;color:#395dbe;padding:7px 11px;font-weight:650}
+    .progress {height:6px;border-radius:20px;background:#edf0f5;margin-bottom:26px;overflow:hidden}
+    .bar {height:100%;width:0;background:#5679df;transition:width .25s ease}
+    h2 {font-size:clamp(20px,3.2vw,25px);line-height:1.36;letter-spacing:-.025em;margin:0 0 25px}
+    .choices {display:grid;gap:11px}
+    .choice {width:100%;padding:15px 16px;min-height:58px;border:1.5px solid #e1e6ee;border-radius:12px;background:white;text-align:left;display:flex;align-items:center;gap:13px;cursor:pointer;color:#253248;font:inherit;line-height:1.42;transition:background .12s,border-color .12s}
+    .choice:not(:disabled):hover {background:#f6f8ff;border-color:#8ca6ec}
+    .choice:focus-visible,.next:focus-visible,.reset:focus-visible,.skip:focus-visible {outline:3px solid #9bb8ff;outline-offset:2px}
+    .choice:disabled {cursor:default;opacity:1}
+    .letter {flex:0 0 29px;height:29px;display:grid;place-items:center;border-radius:8px;background:#f0f3f8;color:#65738c;font-size:13px;font-weight:700}
+    .choice.correct {border-color:#4dbb8b;background:#eefaf4;color:#146343}
+    .choice.correct .letter {background:#d1f1e1;color:#146343}
+    .choice.wrong {border-color:#e99a9a;background:#fff1f1;color:#a73535}
+    .choice.wrong .letter {background:#fbdcdc;color:#a73535}
+    .choice.dim {opacity:.58}
+    .feedback {margin-top:20px;border-radius:12px;padding:15px 16px;line-height:1.5;display:none;font-size:15px}
+    .feedback.show {display:block}
+    .feedback.good {background:#eefaf4;color:#176a46}
+    .feedback.bad {background:#fff2f1;color:#a43535}
+    .actions {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px}
+    .hint {font-size:12px;color:#8792a4}
+    .buttons {display:flex;gap:9px}
+    .next,.skip {border:0;border-radius:11px;padding:13px 17px;font:inherit;font-weight:700;cursor:pointer}
+    .next {background:#365fd3;color:#fff}
+    .next:hover {background:#244fca}
+    .next:disabled {background:#b2bdd3;cursor:not-allowed}
+    .skip {background:#edf1f8;color:#51617d}
+    .skip:hover {background:#e1e8f3}
+    .foot {text-align:center;margin:17px 0;color:#8a95a6;font-size:12px}
+    @media(max-width:520px){body{padding:24px 12px}.stats{gap:7px}.stat{padding:11px}.stat-value{font-size:20px}.card{border-radius:15px}.actions{align-items:stretch;flex-direction:column}.buttons{justify-content:flex-end}.hint{order:2}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top">
+      <div><h1>Анатомия: голова и шея</h1><p class="subtitle"><span id="count">Вопросы</span> · бесконечная колода · без интернета · один файл</p></div>
+      <button id="reset" class="reset" title="Сбросить статистику и перемешать вопросы">Начать заново</button>
+    </header>
+    <div class="filters"><label>Колода<select id="studyDeck"><option value="main">Основная колода</option><option value="mistakes">Работа над ошибками</option></select></label><div class="topic-filter"><span>Темы (можно несколько)</span><details id="topicDropdown"><summary id="topicSummary">Все темы</summary><div class="topic-panel"><div class="topic-actions"><button type="button" id="selectAllTopics">Выбрать все</button><button type="button" id="clearTopics">Снять все</button></div><div id="topicOptions"></div></div></details></div><label>Вопросы<select id="source"><option value="all">Все вопросы</option><option value="new">Только новые из PDF</option><option value="old">Только исходные 100</option></select></label></div>
+    <div class="mistakes-tools"><span>В колоде ошибок: <strong id="mistakesCount">0</strong></span><button type="button" id="clearMistakes" class="clear-mistakes">Очистить ошибки</button><span>Ошибки сохраняются в этом браузере</span></div>
+    <section class="stats" aria-label="Результаты">
+      <div class="stat"><div class="stat-label">Отвечено</div><div class="stat-value" id="answered">0</div></div>
+      <div class="stat"><div class="stat-label">Правильно</div><div class="stat-value" id="correct">0</div></div>
+      <div class="stat"><div class="stat-label">Точность</div><div class="stat-value" id="accuracy">—</div></div>
+    </section>
+    <section class="card" aria-label="Вопрос">
+      <div class="meta"><span class="tag" id="round">Круг 1</span><span id="position">Вопрос 1</span></div>
+      <div class="progress"><div class="bar" id="progress"></div></div>
+      <div id="empty" class="empty" hidden><span id="emptyMessage"></span></div>
+      <div id="quizContent">
+      <h2 id="question"></h2><p class="mode" id="mode"></p>
+      <div id="choices" class="choices"></div>
+      <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+      <div class="actions"><span class="hint">1–9 — выбор · Enter — проверить/дальше</span><div class="buttons"><button id="submit" class="submit" hidden disabled>Проверить</button><button id="skip" class="skip">Пропустить</button><button id="next" class="next" disabled>Следующий →</button></div></div>
+      <div class="source-line" id="sourceLine"></div>
+      </div>
+    </section>
+    <p class="foot">Ответы перенесены из присланных документов. Неверные ответы автоматически сохраняются в отдельной колоде. После правильной пересдачи вопрос исчезает из неё. Вопросы с несколькими ответами проверяются после нажатия «Проверить».</p>
+  </main>
+  <script>
+"use strict";
+// Вопросы из двух предоставленных документов.
+const QUESTIONS = [
+  {
+    "id": "old-1",
+    "question": "Что такое полость рта?",
+    "options": [
+      "Костная структура лицевого черепа",
+      "Мышечный орган",
+      "Начальный отдел пищеварительного тракта",
+      "Часть глотки"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 1",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-2",
+    "question": "Какими костями образована верхняя стенка полости рта (твердое небо)?",
+    "options": [
+      "Верхнечелюстными и решетчатой",
+      "Небными отростками верхнечелюстных костей и горизонтальными пластинками небных костей",
+      "Скуловыми и небными костями",
+      "Клиновидной и височными костями"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 2",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-3",
+    "question": "Какая кость участвует в образовании передней стенки полости рта?",
+    "options": [
+      "Нижняя носовая раковина",
+      "Тело нижней челюсти",
+      "Скуловая кость",
+      "Верхнечелюстная кость"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 3",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-4",
+    "question": "Что образует боковые стенки полости рта?",
+    "options": [
+      "Крыловидные отростки клиновидной кости",
+      "Щеки",
+      "Височные кости",
+      "Скуловые кости"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 4",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-5",
+    "question": "Что составляет нижнюю стенку полости рта?",
+    "options": [
+      "Подъязычная кость",
+      "Шиловидный отросток",
+      "Надподъязычные мышцы и язык",
+      "Грудино-ключично-сосцевидная мышца"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 5",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-6",
+    "question": "Какая структура образует заднюю стенку полости рта?",
+    "options": [
+      "Глотка",
+      "Зев",
+      "Пищевод",
+      "Мягкое небо"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 6",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-7",
+    "question": "Что такое преддверие полости рта?",
+    "options": [
+      "Пространство под языком",
+      "Щелевидное пространство между губами, щеками и зубами",
+      "Область мягкого неба",
+      "Зазубренное пространство"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 7",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-8",
+    "question": "Какие структуры открываются в преддверие полости рта?",
+    "options": [
+      "Слезные канальцы",
+      "Протоки околоушных слюнных желез",
+      "Носослезный проток",
+      "Протоки поднижнечелюстных желез"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 8",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-9",
+    "question": "Что такое собственно полость рта?",
+    "options": [
+      "Пространство между губами и деснами",
+      "Пространство внутри зубных дуг",
+      "Область под языком",
+      "Зазубренное пространство"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 9",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-10",
+    "question": "Чем ограничена собственно полость рта сверху?",
+    "options": [
+      "Мягким небом",
+      "Твердым небом",
+      "Верхней губой",
+      "Верхнечелюстной костью"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 10",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-11",
+    "question": "Чем ограничена собственно полость рта снизу?",
+    "options": [
+      "Подбородком",
+      "Языком и слизистой оболочкой дна полости рта",
+      "Телом нижней челюсти",
+      "Подъязычной костью"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 11",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-12",
+    "question": "Чем ограничена собственно полость рта сзади?",
+    "options": [
+      "Глоткой",
+      "Зевом",
+      "Мягким небом",
+      "Пищеводом"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 12",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-13",
+    "question": "Что такое зев?",
+    "options": [
+      "Отверстие в носоглотку",
+      "Отверстие, соединяющее полость рта с глоткой",
+      "Пространство между языком и небом",
+      "Начало пищевода"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 13",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-14",
+    "question": "Какие структуры ограничивают зев по бокам?",
+    "options": [
+      "Корень языка и надгортанник",
+      "Небные дужки и миндалины",
+      "Крыловидные отростки",
+      "Шиловидные отростки"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 14",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-15",
+    "question": "Что такое небные дужки?",
+    "options": [
+      "Костные выступы небных костей",
+      "Складки слизистой оболочки с заложенными в них мышцами",
+      "Хрящевые образования глотки",
+      "Мышечные жомы пищевода"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 15",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-16",
+    "question": "Сколько небных дужек имеется с каждой стороны?",
+    "options": [
+      "Одна",
+      "Две",
+      "Три",
+      "Четыре"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 16",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-17",
+    "question": "Какие небные дужки различают?",
+    "options": [
+      "Верхние и нижние",
+      "Передние и задние",
+      "Медиальные и латеральные",
+      "Большие и малые"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 17",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-18",
+    "question": "Что расположено между небными дужками?",
+    "options": [
+      "Язычная миндалина",
+      "Небная миндалина",
+      "Трубная миндалина",
+      "Глоточная миндалина"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 18",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-19",
+    "question": "Что такое небная миндалина?",
+    "options": [
+      "Слюнная железа",
+      "Мышечное образование",
+      "Скопление лимфоидной ткани",
+      "Нервное сплетение"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 19",
+    "category": "Иммунитет и лимфа",
+    "origin": "old"
+  },
+  {
+    "id": "old-20",
+    "question": "Какие органы входят в лимфоэпителиальное глоточное кольцо Пирогова-Вальдейера?",
+    "options": [
+      "Щитовидная железа и тимус",
+      "Небные, глоточная, язычная, трубные миндалины",
+      "Поднижнечелюстные и подъязычные слюнные железы",
+      "Околоушные железы"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 20",
+    "category": "Иммунитет и лимфа",
+    "origin": "old"
+  },
+  {
+    "id": "old-21",
+    "question": "Какая функция у лимфоэпителиального глоточного кольца?",
+    "options": [
+      "Слюноотделение",
+      "Защитная (иммунная)",
+      "Дыхательная",
+      "Пищеварительная"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 21",
+    "category": "Иммунитет и лимфа",
+    "origin": "old"
+  },
+  {
+    "id": "old-22",
+    "question": "Что такое твердое небо?",
+    "options": [
+      "Мышечная структура",
+      "Костная стенка, отделяющая полость рта от носовой полости",
+      "Хрящевая пластинка",
+      "Слизистая оболочка"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 22",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-23",
+    "question": "Какими костями образовано твердое небо?",
+    "options": [
+      "Лобными и решетчатыми",
+      "Небными отростками верхнечелюстных костей и горизонтальными пластинками небных костей",
+      "Скуловыми и височными",
+      "Клиновидными и сошником"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 23",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-24",
+    "question": "Что такое мягкое небо?",
+    "options": [
+      "Костное образование",
+      "Хрящевая пластинка",
+      "Мышечное образование, покрытое слизистой оболочкой",
+      "Жировая подушка"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 24",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-25",
+    "question": "Какая функция у мягкого неба?",
+    "options": [
+      "Участие в жевании",
+      "Разделение носоглотки и ротоглотки при глотании",
+      "Формирование голоса",
+      "Вкусовая рецепция"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 25",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-26",
+    "question": "Что такое небный язычок?",
+    "options": [
+      "Костный выступ",
+      "Свисающий книзу мышечный отросток мягкого неба",
+      "Часть языка",
+      "Лимфоидный орган"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 26",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-27",
+    "question": "Какая основная функция небного язычка?",
+    "options": [
+      "Жевание",
+      "Участие в образовании звуков и предотвращение попадания пищи в носоглотку",
+      "Вкус",
+      "Дыхание"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 27",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-28",
+    "question": "Какие мышцы входят в состав мягкого неба?",
+    "options": [
+      "Жевательные и височные",
+      "Мышца, напрягающая небную занавеску; мышца, поднимающая небную занавеску; небно-язычная; небно-глоточная; язычка",
+      "Подбородочно-подъязычная и челюстно-подъязычная",
+      "Круговая мышца рта и щечная"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 28",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-29",
+    "question": "Какая мышца поднимает мягкое небо?",
+    "options": [
+      "Мышца, напрягающая небную занавеску",
+      "Мышца, поднимающая небную занавеску",
+      "Небно-язычная мышца",
+      "Небно-глоточная мышца"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 29",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-30",
+    "question": "Какая мышца напрягает мягкое небо?",
+    "options": [
+      "Мышца, напрягающая небную занавеску",
+      "Мышца, поднимающая небную занавеску",
+      "Небно-язычная мышца",
+      "Небно-глоточная мышца"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Старый тест · вопрос 30",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-31",
+    "question": "Какая мышца опускает мягкое небо?",
+    "options": [
+      "Мышца, напрягающая небную занавеску",
+      "Мышца, поднимающая небную занавеску",
+      "Небно-язычная мышца",
+      "Мышца язычка"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 31",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-32",
+    "question": "Какая мышца суживает зев?",
+    "options": [
+      "Мышца, напрягающая небную занавеску",
+      "Мышца, поднимающая небную занавеску",
+      "Небно-язычная мышца",
+      "Небно-глоточная мышца"
+    ],
+    "correct": [
+      3
+    ],
+    "source": "Старый тест · вопрос 32",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-33",
+    "question": "Какая мышца поднимает и укорачивает небный язычок?",
+    "options": [
+      "Мышца, напрягающая небную занавеску",
+      "Мышца, поднимающая небную занавеску",
+      "Небно-язычная мышца",
+      "Мышца язычка"
+    ],
+    "correct": [
+      3
+    ],
+    "source": "Старый тест · вопрос 33",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-34",
+    "question": "Какие нервы иннервируют мышцы мягкого неба?",
+    "options": [
+      "Лицевой и тройничный нервы",
+      "Блуждающий нерв (X пара) и тройничный нерв (V пара)",
+      "Языкоглоточный и подъязычный нервы",
+      "Добавочный и лицевой нервы"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 34",
+    "category": "Нервы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-35",
+    "question": "Какая артерия кровоснабжает большую часть неба?",
+    "options": [
+      "Лицевая артерия",
+      "Нисходящая небная артерия",
+      "Верхнечелюстная артерия",
+      "Язычная артерия"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 35",
+    "category": "Сосуды головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-36",
+    "question": "Что такое шов неба?",
+    "options": [
+      "Мышечное волокно",
+      "Срединная линия соединения небных отростков",
+      "Кровеносный сосуд",
+      "Нервное сплетение"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 36",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-37",
+    "question": "Что такое небные валики?",
+    "options": [
+      "Костные гребни",
+      "Поперечные складки слизистой оболочки на твердом небе",
+      "Мышечные пучки",
+      "Слюнные железы"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 37",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-38",
+    "question": "Какая функция у небных валиков?",
+    "options": [
+      "Дыхание",
+      "Способствуют механической обработке пищи",
+      "Вкус",
+      "Образование звуков"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 38",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-39",
+    "question": "Что такое резцовое отверстие?",
+    "options": [
+      "Отверстие для протока слюнной железы",
+      "Отверстие в переднем отделе твердого неба, ведущее в резцовый канал",
+      "Отверстие для нервов и сосудов",
+      "Отверстие в носовую полость"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 39",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-40",
+    "question": "Что такое большой небный канал?",
+    "options": [
+      "Канал в верхней челюсти",
+      "Канал в небной кости для нервов и сосудов",
+      "Канал в клиновидной кости",
+      "Проток слюнной железы"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 40",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-41",
+    "question": "Какие отверстия открываются на твердом небе?",
+    "options": [
+      "Подглазничные отверстия",
+      "Большое и малые небные отверстия",
+      "Резцовое отверстие",
+      "Отверстия верхнечелюстной пазухи"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 41",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-42",
+    "question": "Что такое дно полости рта?",
+    "options": [
+      "Тело нижней челюсти",
+      "Совокупность мягких тканей, расположенных между языком и кожей подбородочно-челюстной области",
+      "Подъязычная кость",
+      "Надподъязычные мышцы"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 42",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-43",
+    "question": "Какая кость лежит в основе дна полости рта?",
+    "options": [
+      "Верхнечелюстная кость",
+      "Подъязычная кость",
+      "Скуловая кость",
+      "Решетчатая кость"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 43",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-44",
+    "question": "Какие мышцы формируют мышечную основу дна полости рта?",
+    "options": [
+      "Мышцы мягкого неба",
+      "Надподъязычные мышцы: челюстно-подъязычная, подбородочно-подъязычная, двубрюшная, шилоподъязычная",
+      "Жевательные мышцы",
+      "Мышцы языка"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 44",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-45",
+    "question": "Какая мышца образует диафрагму рта?",
+    "options": [
+      "Подбородочно-подъязычная мышца",
+      "Челюстно-подъязычная мышца",
+      "Двубрюшная мышца",
+      "Шилоподъязычная мышца"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 45",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-46",
+    "question": "Какая мышца тянет подъязычную кость и язык вперед и вверх?",
+    "options": [
+      "Челюстно-подъязычная мышца",
+      "Подбородочно-подъязычная мышца",
+      "Двубрюшная мышца",
+      "Шилоподъязычная мышца"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 46",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-47",
+    "question": "Какая мышца тянет подъязычную кость вверх и назад?",
+    "options": [
+      "Челюстно-подъязычная мышца",
+      "Подбородочно-подъязычная мышца",
+      "Двубрюшная мышца",
+      "Шилоподъязычная мышца"
+    ],
+    "correct": [
+      3
+    ],
+    "source": "Старый тест · вопрос 47",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-48",
+    "question": "Какая мышца тянет подъязычную кость вниз?",
+    "options": [
+      "Челюстно-подъязычная мышца",
+      "Подбородочно-подъязычная мышца",
+      "Двубрюшная мышца (переднее брюшко)",
+      "Шилоподъязычная мышца"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 48",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-49",
+    "question": "Какая мышца тянет подъязычную кость вниз и назад?",
+    "options": [
+      "Челюстно-подъязычная мышца",
+      "Подбородочно-подъязычная мышца",
+      "Двубрюшная мышца (заднее брюшко)",
+      "Шилоподъязычная мышца"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 49",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-50",
+    "question": "Что такое подъязычная складка?",
+    "options": [
+      "Складка на языке",
+      "Складка слизистой оболочки между языком и дном полости рта",
+      "Складка на небе",
+      "Складка на щеке"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 50",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-51",
+    "question": "Что расположено в подъязычной складке?",
+    "options": [
+      "Околоушная слюнная железа",
+      "Подъязычная слюнная железа и ее протоки",
+      "Поднижнечелюстная слюнная железа",
+      "Небные миндалины"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 51",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-52",
+    "question": "Что такое подъязычный сосочек?",
+    "options": [
+      "Сосочек на кончике языка",
+      "Возвышение на дне полости рта, где открывается проток поднижнечелюстной железы",
+      "Сосочек на мягком небе",
+      "Сосочек на щеке"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 52",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-53",
+    "question": "Где открывается проток поднижнечелюстной слюнной железы?",
+    "options": [
+      "В преддверие полости рта",
+      "На подъязычном сосочке",
+      "В области небных миндалин",
+      "На спинке языка"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 53",
+    "category": "Железы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-54",
+    "question": "Где открываются протоки подъязычной слюнной железы?",
+    "options": [
+      "В преддверие полости рта",
+      "На подъязычном сосочке",
+      "На подъязычной складке",
+      "На небных валиках"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 54",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-55",
+    "question": "Что такое уздечка языка?",
+    "options": [
+      "Складка на небе",
+      "Складка слизистой оболочки, соединяющая дно полости рта с нижней поверхностью языка",
+      "Складка на губе",
+      "Складка на щеке"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 55",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-56",
+    "question": "Что такое уздечка верхней губы?",
+    "options": [
+      "Складка на небе",
+      "Складка под языком",
+      "Складка слизистой оболочки, соединяющая верхнюю губу с десной",
+      "Складка на щеке"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 56",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-57",
+    "question": "Что такое уздечка нижней губы?",
+    "options": [
+      "Складка на небе",
+      "Складка под языком",
+      "Складка слизистой оболочка, соединяющая нижнюю губу с десной",
+      "Складка на щеке"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 57",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-58",
+    "question": "Какие слюнные железы открываются в преддверие полости рта?",
+    "options": [
+      "Поднижнечелюстные и подъязычные",
+      "Околоушные",
+      "Небные",
+      "Щечные"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 58",
+    "category": "Железы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-59",
+    "question": "Какие слюнные железы открываются в собственно полость рта?",
+    "options": [
+      "Околоушные",
+      "Поднижнечелюстные и подъязычные",
+      "Только подъязычные",
+      "Только поднижнечелюстные"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 59",
+    "category": "Железы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-60",
+    "question": "Что такое щеки?",
+    "options": [
+      "Костные образования",
+      "Мышечные образования, покрытые снаружи кожей, изнутри слизистой оболочкой",
+      "Жировые комки",
+      "Хрящевые пластинки"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 60",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-61",
+    "question": "Какая мышца составляет основу щеки?",
+    "options": [
+      "Круговая мышца рта",
+      "Щечная мышца",
+      "Жевательная мышца",
+      "Височная мышца"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 61",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-62",
+    "question": "Что такое жировое тело щеки (комок Биша)?",
+    "options": [
+      "Лимфоидная ткань",
+      "Слюнная железа",
+      "Скопление жировой ткани в толще щеки",
+      "Мышечный пучок"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 62",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-63",
+    "question": "Какая функция у щечной мышцы?",
+    "options": [
+      "Поднимание угла рта",
+      "Прижимание щеки к зубам и оттягивание угла рта назад",
+      "Закрывание рта",
+      "Открывание рта"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 63",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-64",
+    "question": "Какие нервы иннервируют щеки?",
+    "options": [
+      "Только лицевой нерв",
+      "Лицевой нерв (двигательная) и тройничный нерв (чувствительная)",
+      "Только тройничный нерв",
+      "Языкоглоточный нерв"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 64",
+    "category": "Нервы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-65",
+    "question": "Что такое губы?",
+    "options": [
+      "Костные структуры",
+      "Мышечно-фиброзные образования, покрытые снаружи кожей, изнутри слизистой оболочкой",
+      "Хрящевые образования",
+      "Жировые складки"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 65",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-66",
+    "question": "Какая мышца составляет основу губ?",
+    "options": [
+      "Щечная мышца",
+      "Круговая мышца рта",
+      "Поднимающая верхнюю губу",
+      "Опускающая нижнюю губу"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 66",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-67",
+    "question": "Какая функция у круговой мышцы рта?",
+    "options": [
+      "Открывание рта",
+      "Закрывание рта и вытягивание губ вперед",
+      "Улыбка",
+      "Надувание щек"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 67",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-68",
+    "question": "Что такое красная кайма губ?",
+    "options": [
+      "Кожа губ",
+      "Слизистая оболочка губ",
+      "Переходная область между кожей и слизистой оболочкой",
+      "Мышечный слой"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 68",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-69",
+    "question": "Какие нервы иннервируют губы?",
+    "options": [
+      "Только лицевой нерв",
+      "Лицевой нерв (двигательная) и тройничный нерв (чувствительная)",
+      "Только тройничный нерв",
+      "Языкоглоточный нерв"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 69",
+    "category": "Нервы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-70",
+    "question": "Какие артерии кровоснабжают губы?",
+    "options": [
+      "Задние небные артерии",
+      "Верхняя и нижняя губные артерии (из лицевой артерии)",
+      "Подбородочные артерии",
+      "Подглазничные артерии"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 70",
+    "category": "Сосуды головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-71",
+    "question": "Что такое язык?",
+    "options": [
+      "Костное образование",
+      "Мышечный орган, покрытый слизистой оболочкой",
+      "Хрящевая структура",
+      "Жировое тело"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 71",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-72",
+    "question": "Какие функции выполняет язык?",
+    "options": [
+      "Только вкусовая",
+      "Участие в жевании, глотании, вкусе, артикуляции речи",
+      "Только речевая",
+      "Только жевание и глотание"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 72",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-73",
+    "question": "Какие части различают в языке?",
+    "options": [
+      "Верхнюю и нижнюю",
+      "Кончик, тело, корень",
+      "Переднюю, среднюю, заднюю",
+      "Спинку и основание"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 73",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-74",
+    "question": "Что такое спинка языка?",
+    "options": [
+      "Нижняя поверхность",
+      "Верхняя поверхность языка",
+      "Корень языка",
+      "Кончик языка"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 74",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-75",
+    "question": "Что такое корень языка?",
+    "options": [
+      "Передняя часть языка",
+      "Задняя часть языка, прикрепленная к подъязычной кости и надгортаннику",
+      "Срединная часть языка",
+      "Кончик языка"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 75",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-76",
+    "question": "Что такое тело языка?",
+    "options": [
+      "Корень и кончик",
+      "Основная средняя часть языка между кончиком и корнем",
+      "Только кончик языка",
+      "Только спинка языка"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 76",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-77",
+    "question": "Что такое терминальная борозда языка?",
+    "options": [
+      "Борозда на кончике языка",
+      "V-образная борозда, отделяющая тело языка от корня",
+      "Борозда на нижней поверхности",
+      "Борозда на спинке языка"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 77",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-78",
+    "question": "Что расположено у вершины терминальной борозды?",
+    "options": [
+      "Небная миндалина",
+      "Слепое отверстие языка",
+      "Подъязычный сосочек",
+      "Резцовое отверстие"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 78",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-79",
+    "question": "Какие сосочки расположены на спинке языка?",
+    "options": [
+      "Только нитевидные",
+      "Нитевидные, грибовидные, желобоватые, листовидные",
+      "Только желобоватые",
+      "Только грибовидные"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 79",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-80",
+    "question": "Какие сосочки языка не содержат вкусовых рецепторов?",
+    "options": [
+      "Грибовидные",
+      "Нитевидные",
+      "Желобоватые",
+      "Листовидные"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 80",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-81",
+    "question": "Какие сосочки языка содержат вкусовые рецепторы?",
+    "options": [
+      "Только желобоватые",
+      "Грибовидные, желобоватые, листовидные",
+      "Только грибовидные",
+      "Только листовидные"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 81",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-82",
+    "question": "Где расположены желобоватые сосочки?",
+    "options": [
+      "На кончике языка",
+      "В ряд перед терминальной бороздой",
+      "По краям тела языка",
+      "На корне языка"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 82",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-83",
+    "question": "Где расположены листовидные сосочки?",
+    "options": [
+      "На кончике языка",
+      "На спинке языка",
+      "По краям задней части тела языка",
+      "На корне языка"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 83",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-84",
+    "question": "Где расположены грибовидные сосочки?",
+    "options": [
+      "Только на кончике языка",
+      "Рассеяны по всей спинке языка, но больше на кончике и краях",
+      "Только на корне языка",
+      "Только по краям языка"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 84",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-85",
+    "question": "Что такое миндаликовая ямка?",
+    "options": [
+      "Ямка на небе",
+      "Углубление между небными дужками, где расположена небная миндалина",
+      "Ямка на языке",
+      "Ямка на глотке"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 85",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-86",
+    "question": "Что такое крипты небных миндалин?",
+    "options": [
+      "Кровеносные сосуды",
+      "Углубления на поверхности миндалин",
+      "Лимфатические узлы",
+      "Слюнные протоки"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 86",
+    "category": "Иммунитет и лимфа",
+    "origin": "old"
+  },
+  {
+    "id": "old-87",
+    "question": "Какая слизистая оболочка покрывает полость рта?",
+    "options": [
+      "Однослойный плоский эпителий",
+      "Многослойный плоский неороговевающий эпителий",
+      "Мерцательный эпителий",
+      "Железистый эпителий"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 87",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-88",
+    "question": "Где в полости рта слизистая оболочка может ороговевать?",
+    "options": [
+      "На щеках",
+      "На мягком небе",
+      "На твердом небе и деснах",
+      "На дне полости рта"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Старый тест · вопрос 88",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-89",
+    "question": "Что такое десневой сосочек?",
+    "options": [
+      "Сосочек на языке",
+      "Участок десны, заполняющий промежуток между зубами",
+      "Сосочек на небе",
+      "Сосочек на губе"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 89",
+    "category": "Полость рта и нёбо",
+    "origin": "old"
+  },
+  {
+    "id": "old-90",
+    "question": "Какие нервы обеспечивают чувствительную иннервацию слизистой оболочки полости рта?",
+    "options": [
+      "Лицевой и языкоглоточный",
+      "Ветви тройничного нерва (V пара)",
+      "Блуждающий и добавочный",
+      "Подъязычный и шейные спинномозговые"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 90",
+    "category": "Нервы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-91",
+    "question": "Какие нервы иннервируют слизистую оболочку щек?",
+    "options": [
+      "Верхний гортанный нерв",
+      "Щечный нерв (от тройничного нерва)",
+      "Язычный нерв",
+      "Большой небный нерв"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 91",
+    "category": "Нервы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-92",
+    "question": "Какие нервы иннервируют слизистую оболочку твердого неба?",
+    "options": [
+      "Язычный нерв",
+      "Большой небный и носонебный нервы (от тройничного нерва)",
+      "Щечный нерв",
+      "Нижний альвеолярный нерв"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 92",
+    "category": "Нервы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-93",
+    "question": "Какие нервы иннервируют слизистую оболочку десен верхней челюсти?",
+    "options": [
+      "Язычный нерв",
+      "Верхние альвеолярные нервы (от тройничного нерва)",
+      "Щечный нерв",
+      "Нижний альвеолярный нерв"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 93",
+    "category": "Нервы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-94",
+    "question": "Какие нервы иннервируют слизистую оболочку десен нижней челюсти?",
+    "options": [
+      "Большой небный нерв",
+      "Нижний альвеолярный нерв (от тройничного нерва)",
+      "Щечный нерв",
+      "Язычный нерв"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 94",
+    "category": "Нервы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-95",
+    "question": "Какие нервы иннервируют слизистую оболочку дна полости рта?",
+    "options": [
+      "Большой небный нерв",
+      "Язычный нерв (от тройничного нерва)",
+      "Щечный нерв",
+      "Верхние альвеолярные нервы"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 95",
+    "category": "Нервы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-96",
+    "question": "Какие нервы иннервируют слизистую оболочку языка?",
+    "options": [
+      "Только языкоглоточный нерв",
+      "Передние 2/3: язычный нерв (от тройничного - общая чувствительность) и барабанная струна (от лицевого - вкус); Задняя 1/3: языкоглоточный нерв (и чувствительность, и вкус)",
+      "Только язычный нерв",
+      "Только блуждающий нерв"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 96",
+    "category": "Язык",
+    "origin": "old"
+  },
+  {
+    "id": "old-97",
+    "question": "Какая артерия является главным источником кровоснабжения полости рта?",
+    "options": [
+      "Внутренняя сонная артерия",
+      "Наружная сонная артерия",
+      "Подключичная артерия",
+      "Позвоночная артерия"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 97",
+    "category": "Сосуды головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-98",
+    "question": "Какие вены осуществляют венозный отток от полости рта?",
+    "options": [
+      "Внутренняя яремная вена",
+      "Лицевая вена и крыловидное венозное сплетение",
+      "Верхняя полая вена",
+      "Подключичная вена"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 98",
+    "category": "Сосуды головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "old-99",
+    "question": "В какие лимфатические узлы оттекает лимфа от полости рта?",
+    "options": [
+      "Паховые узлы",
+      "Поднижнечелюстные, подбородочные, глубокие шейные лимфатические узлы",
+      "Подмышечные узлы",
+      "Затылочные узлы"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 99",
+    "category": "Иммунитет и лимфа",
+    "origin": "old"
+  },
+  {
+    "id": "old-100",
+    "question": "Какая слюнная железа является самой крупной?",
+    "options": [
+      "Поднижнечелюстная",
+      "Околоушная",
+      "Подъязычная",
+      "Щечная"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Старый тест · вопрос 100",
+    "category": "Железы головы и шеи",
+    "origin": "old"
+  },
+  {
+    "id": "new-1",
+    "question": "Уровень бифуркации общей сонной артерии (a. carotis communis):",
+    "options": [
+      "верхний край щитовидного хряща",
+      "яремная вырезка грудины",
+      "нижний край щитовидного хряща",
+      "перстеневидный хрящ",
+      "угол нижней челюсти."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 380",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-2",
+    "question": "К передним ветвям наружной сонной артерии (a. carotis externa) относятся:",
+    "options": [
+      "лицевая артерия (a. facialis)",
+      "язычная артерия (a. lingualis)",
+      "верхняя щитовидная артерия (a. thyroidea superior)",
+      "верхнечелюстная артерия (a. maxillaris)",
+      "глазная артерия (a. ophthalmica)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 381",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-3",
+    "question": "Щитовидные артерии (a. thyroidea) отходят от:",
+    "options": [
+      "щитошейного ствола (truncus thyrocervicalis)",
+      "наружней сонной артерии (a. carotis externa)",
+      "позвоночной артерии (a. vertebralis)",
+      "реберно-шейного ствола (truncus costocervicalis)",
+      "подключичной артерии (a. subclavia)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 381",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-4",
+    "question": "Ветви лицевой артерии (a. facialis):",
+    "options": [
+      "угловая артерия (a. angularis)",
+      "нижняя губная артерия (a. labialis inferior)",
+      "верхняя губная артерия (a. labialis superior)",
+      "тыльная артерия носа (a. dorsalis nasi)",
+      "поперечная артерия лица (a. transversa faciei)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 382",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-5",
+    "question": "Лицевая артерия (a. facialis) является ветвью:",
+    "options": [
+      "наружной сонной артерии (a. carotis externa)",
+      "поперечной артерии лица (a. transversa faciei)",
+      "верхнечелюстной артерии (a. maxillaris)",
+      "внутренней сонной артерии (a. carotis interna)",
+      "поверхностной височной артерии (a. temporalis superficialis)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 382",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-6",
+    "question": "Конечной ветвью лицевой артерии (a. facialis) является:",
+    "options": [
+      "угловая артерия (a. angularis)",
+      "глазная артерия (a. ophthalmica)",
+      "надблоковая артерия (a. supratrochlearis)",
+      "надглазничнаяартерия (a. supraorbitalis)",
+      "верхнечелюстная артерия (a. maxillaris)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 382",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-7",
+    "question": "Лицевая артерия (a. facialis) анастомозирует с:",
+    "options": [
+      "ветвями глазной артерии (a. ophthalmica)",
+      "ветвямиповерхностной височнойартерии (a. temporalis superficialis)",
+      "ветвями подключичной артерии (a. subclavia)",
+      "ветвями базилярной артерии (a. basilaris)",
+      "не участвует в формировании анастомозов."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 382",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-8",
+    "question": "Направление хода лицевой артерии (a. facialis):",
+    "options": [
+      "от угла нижней челюсти к медиальному углу глаза",
+      "параллельно скуловой дуге и под ней",
+      "от угла нижней челюсти к латеральному углу глаза",
+      "от подбородочного отверстия к нижней губе",
+      "от надбровной дуги к медиальному углу глаза."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 383",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-9",
+    "question": "От верхнечелюстной артерии (a. maxillaris) в крыловидном отделе отходят:",
+    "options": [
+      "жевательная артерия (a. masseterica)",
+      "крыловидные артерии (aa. pterygoidei)",
+      "глубокая височная артерия (a. temporalis profunda)",
+      "щечная артерия (a. buccalis)",
+      "средняя менингеальная артерия (a. meningea media)."
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 383",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-10",
+    "question": "К ветвям верхнечелюстной артерии (a. maxillaris) вкрыловиднонебном отделе относят:",
+    "options": [
+      "клиновидно-небную артерию (a. sphenopalatina)",
+      "нисходящую небную артерию (a. palatina descendens)",
+      "подглазничную артерию (a. infraorbitalis)",
+      "среднюю менингеальную артерию (a. meningea media)",
+      "поверхностную височную артерию (a. temporalis superficialis)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 383",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-11",
+    "question": "Ветви челюстного отдела верхнечелюстной артерии (a. maxillaris):",
+    "options": [
+      "нижняя альвеолярная артерия (a. alveolaris inferior)",
+      "средняя менингеальная артерия (a. meningea media)",
+      "подглазничная артерия (a. infraorbitalis)",
+      "нисходящая небная артерия (a. palatina descendens)",
+      "язычная артерия (a. lingualis)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 383",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-12",
+    "question": "Ветви верхнечелюстной артерии (a. maxillaris) в челюстном отделе:",
+    "options": [
+      "нижняя альвеолярная артерия (a. alveolaris inferior)",
+      "средняя менингеальная артерия (a. meningea media)",
+      "лицевая артерия (a. facialis)",
+      "поперечная артерия лица (a. transversa faciei)",
+      "язычная артерия (a. lingualis)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 384",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-13",
+    "question": "Отделы внутренней сонной артерии (a. carotis interna):",
+    "options": [
+      "мозговой",
+      "пещеристый",
+      "каменистый",
+      "шейный",
+      "лицевой."
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 385",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-14",
+    "question": "Ветви каменистой части внутренней сонной артерии (a. carotis interna):",
+    "options": [
+      "сонно-барабанные артерии (аa. caroticotympanicaе)",
+      "передняя мозговая артерия (a. cerebri anterior)",
+      "передняя решетчатая артерия (a. ethmoidalis anterior)",
+      "угловая артерия (a. angularis)",
+      "глазная артерия (a. ophthalmica)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 385",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-15",
+    "question": "Внутренняя сонная артерия (a. carotis interna) отходит от общей сонной артерии:",
+    "options": [
+      "на уровне верхнего края щитовидного хряща",
+      "на уровне I-го ребра",
+      "на уровне нижнего края щитовидного хряща",
+      "на уровне угла нижней челюсти",
+      "на уровне большого затылочного отверстия."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 385",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-16",
+    "question": "Ветвью внутренней сонной артерии (a. carotis interna) является:",
+    "options": [
+      "глазная артерия (a. ophthalmica)",
+      "лицевая артерия (a. facialis)",
+      "верхнечелюстная артерия (a. maxillaris)",
+      "позвоночные артерии (aa. vertebrales)",
+      "базилярная артерия (a. basilaris)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 385",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-17",
+    "question": "От нижней щитовидной артерии (a. thyroidea inferior) отходят:",
+    "options": [
+      "железистые ветви (rr. glandulares)",
+      "пищеводные ветви (rr. esophageales)",
+      "трахеальные ветви (rr. tracheales)",
+      "нижняя щитовидная артерия (a. thyroidea inferior)",
+      "восходящая артерия (a. ascendens)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 388",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-18",
+    "question": "Щитовидные вены (vv. thyroidei) являются притоками:",
+    "options": [
+      "внутренней яремной вены (v. jugularis interna)",
+      "плечеголовной вены (v. brachiocephalica)",
+      "наружной яремной вены (v. jugularis externa)",
+      "лицевй вены (v. facialis)",
+      "поверхностной височной вены (v. temporalis superficialis)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 389",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-19",
+    "question": "Возможные варианты впадения наружной яремной вены (v. jugularis externa):",
+    "options": [
+      "угол слияния подключичной (v. subclavia) и внутренней яремной вены (v. jugularis interna)",
+      "подключичная вена (v. subclavia)",
+      "передняя яремная вена (v. jugularis anterior)",
+      "непарная вена (v. azygos)",
+      "лицевая вена (v. facialis)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 390",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-20",
+    "question": "Притоками наружной яремной вены (v. jugularis externa) являются:",
+    "options": [
+      "надлопаточная вена (v. suprascapularis)",
+      "поперечная вена шеи (v. transversa colli)",
+      "лицевая вена (v. facialis)",
+      "язычная вена (v. lingualis)",
+      "подключичная вена (v. subclavia)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 390",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-21",
+    "question": "Внечерепные притоки внутренней яремной вены (v. jugularis interna):",
+    "options": [
+      "язычная вена (v. lingualis)",
+      "глоточные вены (vv. pharyngeae)",
+      "лицевая вена (v. facialis)",
+      "верхняя щитовидная вена (v. thyroidea superior)",
+      "диплоические вены (vv. diploicae)."
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 390",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-22",
+    "question": "Вены, формирующие наружную яремную вену (v. jugularis externa):",
+    "options": [
+      "занижнечелюстная вена (v. retromandibularis)",
+      "затылочная вена (v. occipitalis)",
+      "задняя ушная вена (v. auricularis posterior)",
+      "лицевая вена (v. facialis)",
+      "глоточные вены (vv. pharyngeae)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 391",
+    "category": "Сосуды головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-23",
+    "question": "К первичным органам иммунной системы относят:",
+    "options": [
+      "костный мозг (medulla ossium)",
+      "селезенка (lien)",
+      "лимфатические узлы (nodi lymphoidei)",
+      "тимус (thymus)",
+      "миндалины (tonsilla)."
+    ],
+    "correct": [
+      0,
+      3
+    ],
+    "source": "Большой PDF · стр. 429",
+    "category": "Иммунитет и лимфа",
+    "origin": "new"
+  },
+  {
+    "id": "new-24",
+    "question": "Узлы, в которые оттекает лимфа от языка:",
+    "options": [
+      "яремно-лопаточно-подъязычный узел (nodus juguloomohyoideus)",
+      "яремно-двубрюшный узел (nodus jugulodigastricus)",
+      "околоушные узлы (nodi parotidei)",
+      "поднижнечелюстные узлы (nodi submandibularis)",
+      "сосцевидные узлы (nodi mastoidei)."
+    ],
+    "correct": [
+      0,
+      1,
+      3
+    ],
+    "source": "Большой PDF · стр. 431",
+    "category": "Иммунитет и лимфа",
+    "origin": "new"
+  },
+  {
+    "id": "new-25",
+    "question": "Узлы, в которые оттекает лимфа от зубов и десен:",
+    "options": [
+      "подподбородочные узлы (nodi submentales)",
+      "поднижнечелюстные узлы (nodi submandibulares)",
+      "околоушные узлы (nodi parotidei)",
+      "лицевые узлы (nodi faciales)",
+      "заглоточные узлы (nodi retropharyngeales)."
+    ],
+    "correct": [
+      0,
+      1,
+      3
+    ],
+    "source": "Большой PDF · стр. 431",
+    "category": "Иммунитет и лимфа",
+    "origin": "new"
+  },
+  {
+    "id": "new-26",
+    "question": "Узлы, которые собирают лимфу от стенок полости рта:",
+    "options": [
+      "поднижнечелюстные узлы (nodi submandibulares)",
+      "лицевые узлы (nodi faciales)",
+      "подподбородочные узлы (nodi submentales)",
+      "заглоточные узлы (nodi retropharyngeales)",
+      "околоушные узлы (nodi parotidei)."
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 431",
+    "category": "Иммунитет и лимфа",
+    "origin": "new"
+  },
+  {
+    "id": "new-27",
+    "question": "Поднижнечелюстная слюнная железа (glandula submandibularis) получает парасимпатическую иннервацию из:",
+    "options": [
+      "поднижнечелюстного узла (ganglion submandibulare)",
+      "нижнего узла блуждающего нерва (ganglion inferius n. vagi)",
+      "узла тройничного нерва (ganglion trigeminale)",
+      "верхнего узла языкоглоточного нерва (ganglion superius n. glossopharyngei)",
+      "верхнего узла блуждающего нерва (ganglion superius n. vagi)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 439",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-28",
+    "question": "Преганглионарные парасимпатические волокна к поднижнечелюстному и подъязычному узлам (ganglion submandibulare/ sublinguale) следуют в составе:",
+    "options": [
+      "барабанной струны (chorda tympani)",
+      "большого каменистого нерва (n. petrosus major)",
+      "малого каменистого нерва (n. petrosus minor)",
+      "барабанного нерва (n. tympanicus)",
+      "ушно­височного нерва (n. auriculotemporalis)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 439",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-29",
+    "question": "Парасимпатические волокна к поднижнечелюстной (glandula submandibularis) и подъязычной железам (glandula sublingualis) переключаются в:",
+    "options": [
+      "поднижнечелюстном узле (ganglion submandibulare)",
+      "крылонебном узле (ganglion pterygopalatinum)",
+      "ушном узле (ganglion oticum)",
+      "узле коленца (ganglion geniculi)",
+      "ресничном узле (ganglion ciliare)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 440",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-30",
+    "question": "Верхнее слюноотделительное ядро (nucleus salivatorius superior) является центром для иннервации:",
+    "options": [
+      "поднижнечелюстной железы (glandula submandibularis)",
+      "слезной железы (glandula lacrimalis)",
+      "желез слизистой оболочки полости носа",
+      "подъязычной железы (glandula sublingualis)",
+      "околоушной железы (glandula parotidea)."
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 440",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-31",
+    "question": "Барабанная струна (chorda tympani) является ветвью:",
+    "options": [
+      "лицевого нерва (n. facialis)",
+      "глазодвигательного нерва (n. oculomotorius)",
+      "тройничного нерва (n. trigeminus)",
+      "языкоглоточного нерва (n. glossopharyngeus)",
+      "блуждающего нерва (n. vagus)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 440",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-32",
+    "question": "От крылонебного узла (ganglion pterygopalatinum) отходят:",
+    "options": [
+      "задние носовые ветви (rr. nasales posteriores)",
+      "большой и малый небные нервы (n. palatinusmajor/minor)",
+      "короткие ресничные ветви (rr. ciliares breves)",
+      "малый каменистый нерв (n. petrosus minor)",
+      "большой каменистый нерв (n. petrosus major)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 440",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-33",
+    "question": "Постганглионарные волокна ушного узла (ganglion oticum) достигают околоушной железы в составе:",
+    "options": [
+      "ушно­височного нерва (n. auriculotemporalis)",
+      "щечного нерва (n. buccalis)",
+      "глазного нерва (n.ophthalmicus)",
+      "скулового нерва (n. zygomaticus)",
+      "нижнего альвеолярного нерва (n. alveolaris inferior)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 441",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-34",
+    "question": "Анатомические структуры, участвующие в иннервации околоушной железы (glandula parotidea):",
+    "options": [
+      "ушной узел (ganglion oticum)",
+      "малый каменистый нерв (n. petrosus minor)",
+      "нижнее слюноотделительное ядро (nucleus salivatorius inferior)",
+      "поднижнечелюстной узел (ganglion submandibulare)",
+      "верхнее слюноотделительное ядро (nucleus salivatorius superior)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 442",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-35",
+    "question": "Постганглионарные парасимпатические волокна к околоушной железе (glandula parotidea) идут в составе:",
+    "options": [
+      "ушно­височного нерва (n. auriculotemporalis)",
+      "верхнечелюстного нерва (n. maxillaris)",
+      "малого каменистого нерва (n. petrosus minor)",
+      "большого каменистого нерва (n. petrosus major)",
+      "барабанной струны (chorda tympani)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 442",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-36",
+    "question": "Постганглионарные симпатические волокна идут к крылонебному узлу (ganglion pterygopalatinum) в составе:",
+    "options": [
+      "глубокого каменистого нерва (n. petrosus profundus)",
+      "барабанной струны (chorda tympani)",
+      "большого каменистого нерва (n. petrosus major)",
+      "малого каменистого нерва (n. petrosus minor)",
+      "носоресничного корешка (radix nasociliaris)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 465",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-37",
+    "question": "Мышцу, напрягающую небную занавеску (m. tensor veli palatini) иннервирует:",
+    "options": [
+      "нижнечелюстной нерв (n. mandibularis)",
+      "блуждающий нерв (n. vagus)",
+      "преддверно­улитковый нерв (n. vestibulocochlearis)",
+      "лицевой нерв (n. facialis)",
+      "языкоглоточный нерв (n. glossopharyngeus)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 466",
+    "category": "Нервы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-38",
+    "question": "Нижнечелюстной нерв (n. mandibularis) иннервирует:",
+    "options": [
+      "жевательную мышцу (m. masseter)",
+      "переднее брюшко (m. digastricus) двубрюшной мышцы (venter anterior)",
+      "челюстно­подъязычную мышцу (m. mylohyoideus)",
+      "щечную мышцу (m. buccinator)",
+      "заднее брюшко (m. digastricus) двубрюшной мышцы (venter posterior)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 466",
+    "category": "Нервы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-39",
+    "question": "Ветвями верхнечелюстного нерва (n. maxillaris) являются:",
+    "options": [
+      "подглазничный нерв (n. infraorbitalis)",
+      "скуловой нерв (n. zygomaticus)",
+      "менингеальная ветвь (r. meningeus)",
+      "надглазничный нерв (n. supraorbitalis)",
+      "крыловидные нервы (n. pterygoidei medialis/lateralis)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 469",
+    "category": "Нервы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-40",
+    "question": "Ветвями лицевого нерва (n. facialis) являются:",
+    "options": [
+      "большой каменистый нерв (n. petrosus major)",
+      "барабанная струна (chorda tympani)",
+      "стременной нерв (n. stapedius)",
+      "глубокий каменистый нерв (n. petrosus profundus)",
+      "малый каменистый нерв (n. petrosus minor)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 469",
+    "category": "Нервы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-41",
+    "question": "Чувствительные волокна входят в поднижнечелюстной узел (ganglion submandibulare) из:",
+    "options": [
+      "нижнечелюстного нерва (n. mandibularis)",
+      "глазного нерва (n. ophthalmicus)",
+      "верхнечелюстного нерва (n. maxillaris)",
+      "лицевого нерва (n. facialis)",
+      "языкоглоточного нерва (n. glossopharyngeus)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 470",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-42",
+    "question": "Парасимпатические (секреторные) волокна барабанной струны (chorda tympani) направляются к:",
+    "options": [
+      "подъязычной железе (glandula sublingualis)",
+      "поднижнечелюстной железе (glandula submandibularis)",
+      "околоушной железе (glandula parotidea)",
+      "слезной железе (glandula lacrimalis)",
+      "щитовидной железе (glandula thyreoidea)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 470",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-43",
+    "question": "Вкусовые волокна барабанной струны (chorda tympani) иннервируют:",
+    "options": [
+      "передние две трети слизистой оболочки спинкиязыка",
+      "переднюю треть слизистой оболочки спинки языка",
+      "задние две трети слизистой оболочки спинкиязыка",
+      "заднюю треть слизистой оболочки спинки языка",
+      "всю поверхность слизистой оболочки спинки языка."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 471",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-44",
+    "question": "Лицевой нерв (n. facialis) осуществляет двигательную иннервацию следующих мышц:",
+    "options": [
+      "мимических мышц",
+      "стременной мышцы (m. stapedius)",
+      "заднего брюшка (venter posterior) двубрюшной мышцы (m. digastricus)",
+      "шилоподъязычной мышцы (m. stylohyoideus)",
+      "жевательных мышц (m. masticatorii)."
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 471",
+    "category": "Нервы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-45",
+    "question": "Лицевой нерв (n. facialis) осуществляет секреторнуюиннервацию:",
+    "options": [
+      "поднижнечелюстной железы (glandula submandibularis)",
+      "подязычной железы (glandula sublingualis)",
+      "слезной железы (glandula lacrimalis)",
+      "желез слизистой оболочки носовой полости",
+      "околоушной железы (glandula parotidea)."
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 471",
+    "category": "Нервы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-46",
+    "question": "Ветви лицевого нерва (n. facialis), содержащие преганглионарные парасимпатические волокна, направляются в:",
+    "options": [
+      "крылонебный узел (ganglionpterygopalatinum)",
+      "поднижнечелюстной узел (ganglion submandibulare)",
+      "ресничный узел (ganglion ciliare)",
+      "ушной узел (ganglion oticum)",
+      "тройничный узел (ganglion trigeminale)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 471",
+    "category": "Нервы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-47",
+    "question": "К ветвям языкоглоточного нерва (n. glossopharyngeus) относятся:",
+    "options": [
+      "ветвь шилоглоточной мышцы (m. stylopharyngeus)",
+      "глоточныеветви(rr. pharyngei)",
+      "синусная ветвь (r. sinus carotici)",
+      "барабанный нерв (n. tympanicus)",
+      "ветви наружного сонного сплетения (plexus caroticus externus)."
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 472",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-48",
+    "question": "Языкоглоточный нерв (n. glossopharyngeus) осуществляет секреторную иннервацию:",
+    "options": [
+      "околоушной железы (glandula parotidea)",
+      "слезной железы (glandula lacrimalis)",
+      "поднижнечелюстной железы (glandula submandibularis)",
+      "подъязычной железы (glandula sublingualis)",
+      "желез слизистой носовой полости."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 472",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-49",
+    "question": "Вкусовые волокна языкоглоточного нерва (n. glossopharyngeus) иннервируют:",
+    "options": [
+      "заднюю треть слизистой оболочки спинки языка",
+      "переднюю треть слизистой оболочки спинки языка",
+      "задние две трети слизистой оболочки спинкиязыка",
+      "передние две трети слизистой оболочки спинкиязыка",
+      "всю поверхность слизистой оболочки спинки языка."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 473",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-50",
+    "question": "Ветви языкоглоточного нерва (n. glossopharyngeus) иннервируют:",
+    "options": [
+      "слизистую оболочку верхних отделов глотки",
+      "слизистую оболочку небной миндалины (tonsilla palatina)",
+      "слизистуюоболочкунебныхдужек(arcuspalatoglossus/ palatopharyngeus)",
+      "сонную пазуху (sinus caroticus)",
+      "слизистую оболочку носовой полости."
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 473",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-51",
+    "question": "Глоточные ветви блуждающего нерва (n. vagus) иннервируют следующие мышцы:",
+    "options": [
+      "верхний констриктор глотки (m. constrictor pharyngis superior)",
+      "мышцу, поднимающуюнебнуюзанавеску (m. levator veli palatini)",
+      "небно­язычную мышцу (m. palatoglossus)",
+      "нижний констриктор глотки (m. constrictor pharyngis inferior)",
+      "мышцу, напрягающую небную занавеску (m. tensor veli palatini)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 473",
+    "category": "Нервы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-52",
+    "question": "Верхний гортанный нерв (n. laryngeus superior) иннервирует:",
+    "options": [
+      "нижний констриктор глотки (m. constrictor pharyngis inferior)",
+      "перстнещитовидную мышцу (m. cricothyreoideus)",
+      "верхний констриктор глотки (m. constrictor pharyngis superior)",
+      "щиточерпаловидную мышцу(m. thyreoarytenoideus)",
+      "голосовую мышцу (m. vocalis)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 473",
+    "category": "Гортань",
+    "origin": "new"
+  },
+  {
+    "id": "new-53",
+    "question": "Ветвями возвратного гортанного нерва (n. laryngeus recurrens) являются:",
+    "options": [
+      "трахеальные ветви (rr. tracheales)",
+      "пищеводные ветви (rr. esophageales)",
+      "глоточные ветви (rr. pharyngeales)",
+      "верхние шейныесердечные нервы(rr. cardiaci cervicales superiores)",
+      "нижниешейныесердечные нервы (rr. cardiaci cervicales inferiores)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 474",
+    "category": "Гортань",
+    "origin": "new"
+  },
+  {
+    "id": "new-54",
+    "question": "Подъязычный нерв (n. hypoglossus) иннервирует:",
+    "options": [
+      "подъязычно­язычную мышцу (m. hyoglossus)",
+      "подбородочно­язычную мышцу (m. genioglossus)",
+      "шилоязычную мышцу (m. styloglossus)",
+      "небно­язычную мышцу (m. palatoglossus)",
+      "шилоглоточную мышцу (m. stylopharyngeus)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 475",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-55",
+    "question": "Подъязычный нерв (n. hypoglossus):",
+    "options": [
+      "идет вниз между внутренней сонной артерией (a. carotis interna) и внутренней яремной веной (v. jugularis interna)",
+      "проходит в область поднижнечелюстного треугольника (trigonum submandibulare)",
+      "идет по боковой поверхности подъязычно­язычноймышцы (m. hyoglossus)",
+      "в его составе содержатся волокна вентральной ветви первого шейного сегмента (С1)",
+      "содержит чувствительные (вкусовые) волокна."
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 475",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-56",
+    "question": "Постганглионарные волокна к слизистой оболочке задних отделов полости носа и твёрдого нёба выходят из:",
+    "options": [
+      "крылонёбного узла (ganglion pterygopalatinum)",
+      "ресничного узла (ganglion ciliare)",
+      "поднижнечелюстного узла (ganglion submandibulare)",
+      "ушного узла (ganglion oticum)",
+      "подъязычного узла (ganglion sublinguale)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 310",
+    "category": "Полость рта и нёбо",
+    "origin": "new"
+  },
+  {
+    "id": "new-57",
+    "question": "Преганглионарные парасимпатические волокна идут к поднижнечелюстному узлу (ganglion submandibulare) в составе:",
+    "options": [
+      "барабанной струны (chorda tympani)",
+      "малого каменистого нерва (n. petrosus minor)",
+      "большого каменистого нерва (n. petrosus major)",
+      "глубокого каменистого нерва (n. petrosus profundus)",
+      "лицевого нерва (n. facialis)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 341",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-58",
+    "question": "К сосочкам языка, не имеющим вкусовых почек, относятся:",
+    "options": [
+      "грибовидные",
+      "нитевидные",
+      "листовидные",
+      "желобовидные"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Большой PDF · стр. 128",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-59",
+    "question": "Скопление лимфоидных узелков корня языка — это:",
+    "options": [
+      "tonsilla pharyngealis",
+      "tonsilla tubaria",
+      "tonsilla palatina",
+      "tonsilla lingualis"
+    ],
+    "correct": [
+      3
+    ],
+    "source": "Большой PDF · стр. 129",
+    "category": "Иммунитет и лимфа",
+    "origin": "new"
+  },
+  {
+    "id": "new-60",
+    "question": "Секрет поднижнечелюстной железы является:",
+    "options": [
+      "слизистым",
+      "смешанным",
+      "серозным"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Большой PDF · стр. 129",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-61",
+    "question": "Подъязычная железа расположена:",
+    "options": [
+      "под диафрагмой рта",
+      "в преддверии рта",
+      "под подъязычной складкой",
+      "в области дна полости рта",
+      "над диафрагмой рта"
+    ],
+    "correct": [
+      2,
+      3,
+      4
+    ],
+    "source": "Большой PDF · стр. 129",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-62",
+    "question": "К наружным мышцам языка относятся:",
+    "options": [
+      "подбородочно-подъязычная мышца",
+      "шилоподъязычная мышца",
+      "подъязычно-язычная мышца",
+      "шилоязычная мышца",
+      "подбородочно-язычная мышца"
+    ],
+    "correct": [
+      2,
+      3,
+      4
+    ],
+    "source": "Большой PDF · стр. 129",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-63",
+    "question": "Околоушной проток расположен:",
+    "options": [
+      "прилежит к скуловой дуге",
+      "кнутри от жевательной мышцы",
+      "кнаружи от жевательной мышцы",
+      "проходит на 1 см ниже скуловой дуги"
+    ],
+    "correct": [
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 130",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-64",
+    "question": "Преддверие полости рта ограничивают следующие анатомические образования:",
+    "options": [
+      "мягкое нёбо",
+      "зубы",
+      "твердое нёбо",
+      "щеки",
+      "дёсны",
+      "губы"
+    ],
+    "correct": [
+      1,
+      3,
+      4,
+      5
+    ],
+    "source": "Большой PDF · стр. 130",
+    "category": "Полость рта и нёбо",
+    "origin": "new"
+  },
+  {
+    "id": "new-65",
+    "question": "Секрет подъязычной железы является:",
+    "options": [
+      "слизистым",
+      "смешанным",
+      "серозным"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 131",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-66",
+    "question": "К собственным мышцам языка относятся:",
+    "options": [
+      "поперечные мышцы языка",
+      "продольные (верхние и нижние)",
+      "вертикальные мышцы языка",
+      "горизонтальные (верхние и нижние)"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 131",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-67",
+    "question": "Протоки подъязычной железы открываются:",
+    "options": [
+      "в собственно полости рта",
+      "на подъязычном сосочке и вдоль подъязычной складки",
+      "на нижней поверхности языка",
+      "в преддверии рта"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 131",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-68",
+    "question": "К мышцам, обеспечивающим подвижность губ, относятся:",
+    "options": [
+      "m. buccinator",
+      "m. masseter",
+      "m. zygomaticus major",
+      "m. orbicularis oris",
+      "m. levator labii superioris",
+      "m. depressor labii inferioris"
+    ],
+    "correct": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "source": "Большой PDF · стр. 131",
+    "category": "Полость рта и нёбо",
+    "origin": "new"
+  },
+  {
+    "id": "new-69",
+    "question": "Поднижнечелюстной проток открывается:",
+    "options": [
+      "в преддверии рта",
+      "в собственно полости рта",
+      "в канале нижней челюсти",
+      "на подъязычном сосочке"
+    ],
+    "correct": [
+      1,
+      3
+    ],
+    "source": "Большой PDF · стр. 132",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-70",
+    "question": "Мышечный слой щеки образуют:",
+    "options": [
+      "m. risorius",
+      "m. temporalis",
+      "m. buccinator",
+      "m. pterygoideus medialis"
+    ],
+    "correct": [
+      0,
+      2
+    ],
+    "source": "Большой PDF · стр. 132",
+    "category": "Полость рта и нёбо",
+    "origin": "new"
+  },
+  {
+    "id": "new-71",
+    "question": "Диафрагму полости рта образуют:",
+    "options": [
+      "подбородочно-подъязычные мышцы",
+      "подбородочно-язычные мышцы",
+      "челюстно-подъязычные мышцы",
+      "передние брюшки двубрюшных мышц"
+    ],
+    "correct": [
+      0,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 132",
+    "category": "Полость рта и нёбо",
+    "origin": "new"
+  },
+  {
+    "id": "new-72",
+    "question": "В полости рта различают следующие отделы:",
+    "options": [
+      "fauces",
+      "angulus oris",
+      "rima oris",
+      "pars oralis pharyngis",
+      "vestibulum oris",
+      "cavitas oris propria"
+    ],
+    "correct": [
+      4,
+      5
+    ],
+    "source": "Большой PDF · стр. 132",
+    "category": "Полость рта и нёбо",
+    "origin": "new"
+  },
+  {
+    "id": "new-73",
+    "question": "Секрет околоушной железы является:",
+    "options": [
+      "слизистым",
+      "смешанным",
+      "серозным"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Большой PDF · стр. 133",
+    "category": "Железы головы и шеи",
+    "origin": "new"
+  },
+  {
+    "id": "new-74",
+    "question": "Основу твердого нёба составляют следующие костные образования:",
+    "options": [
+      "лобные отростки верхних челюстей",
+      "нёбные отростки верхних челюстей",
+      "перпендикулярные пластинки нёбных костей",
+      "горизонтальные пластинки нёбных костей"
+    ],
+    "correct": [
+      1,
+      3
+    ],
+    "source": "Большой PDF · стр. 133",
+    "category": "Полость рта и нёбо",
+    "origin": "new"
+  },
+  {
+    "id": "new-75",
+    "question": "Слепое отверстие языка — это:",
+    "options": [
+      "отверстие вкусового сосочка",
+      "остаток эмбрионального щитоязычного протока",
+      "отверстие подъязычного протока",
+      "остаток жаберной щели"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Большой PDF · стр. 133",
+    "category": "Язык",
+    "origin": "new"
+  },
+  {
+    "id": "new-76",
+    "question": "К продольным мышцам глотки относятся:",
+    "options": [
+      "средний констриктор глотки",
+      "шилоглоточная мышца",
+      "нижний констриктор глотки",
+      "трубно-глоточная мышца",
+      "верхний констриктор глотки"
+    ],
+    "correct": [
+      1,
+      3
+    ],
+    "source": "Большой PDF · стр. 134",
+    "category": "Глотка и зев",
+    "origin": "new"
+  },
+  {
+    "id": "new-78",
+    "question": "Мягкое нёбо выполняет следующие функции:",
+    "options": [
+      "разделяет пищевые и воздухоносные пути при глотании",
+      "участвует в речевой артикуляции",
+      "участвует в жевании"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 134",
+    "category": "Полость рта и нёбо",
+    "origin": "new"
+  },
+  {
+    "id": "new-79",
+    "question": "Ротоглотка в процессе глотания отделяется от носоглотки:",
+    "options": [
+      "мягким нёбом",
+      "надгортанником",
+      "языком",
+      "гортанью"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 134",
+    "category": "Глотка и зев",
+    "origin": "new"
+  },
+  {
+    "id": "new-80",
+    "question": "В подслизистой основе слизистой оболочки мягкого нёба находятся:",
+    "options": [
+      "серозные железы",
+      "слюнные железы",
+      "мышечные пучки",
+      "сальные железы"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 135",
+    "category": "Полость рта и нёбо",
+    "origin": "new"
+  },
+  {
+    "id": "new-81",
+    "question": "Наружная оболочка глотки представлена:",
+    "options": [
+      "синовиальной оболочкой",
+      "брюшиной",
+      "плеврой",
+      "адвентициальной оболочкой"
+    ],
+    "correct": [
+      3
+    ],
+    "source": "Большой PDF · стр. 135",
+    "category": "Глотка и зев",
+    "origin": "new"
+  },
+  {
+    "id": "new-82",
+    "question": "Между нёбно-язычной и нёбно-глоточной дужками зева находятся:",
+    "options": [
+      "язычная миндалина",
+      "нёбная миндалина",
+      "надминдаликовая ямка",
+      "миндаликовая ямка",
+      "глоточная миндалина"
+    ],
+    "correct": [
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 135",
+    "category": "Глотка и зев",
+    "origin": "new"
+  },
+  {
+    "id": "new-83",
+    "question": "Мягкое нёбо состоит из:",
+    "options": [
+      "слизистой оболочки",
+      "нёбной миндалины",
+      "мышц мягкого нёба",
+      "нёбного апоневроза"
+    ],
+    "correct": [
+      0,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 136",
+    "category": "Полость рта и нёбо",
+    "origin": "new"
+  },
+  {
+    "id": "new-84",
+    "question": "Переход глотки в пищевод располагается на уровне:",
+    "options": [
+      "VI шейного позвонка",
+      "IV шейного позвонка",
+      "основания черепа",
+      "II грудного позвонка"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 137",
+    "category": "Глотка и зев",
+    "origin": "new"
+  },
+  {
+    "id": "new-85",
+    "question": "К мышцам-сжимателям глотки относятся:",
+    "options": [
+      "нижний констриктор глотки",
+      "верхний констриктор глотки",
+      "трубно-глоточная мышца",
+      "шилоглоточная мышца",
+      "средний констриктор глотки"
+    ],
+    "correct": [
+      0,
+      1,
+      4
+    ],
+    "source": "Большой PDF · стр. 137",
+    "category": "Глотка и зев",
+    "origin": "new"
+  },
+  {
+    "id": "new-86",
+    "question": "Выберите парные хрящи гортани:",
+    "options": [
+      "черпаловидный хрящ",
+      "щитовидный хрящ",
+      "рожковидный хрящ",
+      "надгортанник",
+      "перстневидный хрящ"
+    ],
+    "correct": [
+      0,
+      2
+    ],
+    "source": "Большой PDF · стр. 162",
+    "category": "Гортань",
+    "origin": "new"
+  },
+  {
+    "id": "new-87",
+    "question": "Укажите отделы полости гортани:",
+    "options": [
+      "желудочек гортани",
+      "подголосовая полость",
+      "зев",
+      "гортаноглотка",
+      "преддверие гортани"
+    ],
+    "correct": [
+      0,
+      1,
+      4
+    ],
+    "source": "Большой PDF · стр. 162",
+    "category": "Гортань",
+    "origin": "new"
+  },
+  {
+    "id": "new-88",
+    "question": "На уровне каких позвонков располагается гортань у взрослого?",
+    "options": [
+      "V–VII шейных позвонков",
+      "III–V шейных позвонков",
+      "IV–VI шейных позвонков"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Большой PDF · стр. 162",
+    "category": "Гортань",
+    "origin": "new"
+  },
+  {
+    "id": "new-89",
+    "question": "Голосовые связки натянуты между:",
+    "options": [
+      "между щитовидным хрящом и надгортанником",
+      "перстневидным хрящом и надгортанником",
+      "щитовидным и перстневидным хрящами",
+      "черпаловидными хрящами и щитовидным хрящом"
+    ],
+    "correct": [
+      3
+    ],
+    "source": "Большой PDF · стр. 163",
+    "category": "Гортань",
+    "origin": "new"
+  },
+  {
+    "id": "new-90",
+    "question": "К вторичным органам иммунной системы относят:",
+    "options": [
+      "костный мозг (medulla ossium)",
+      "селезенка (lien)",
+      "лимфатические узелки (noduli lymphoidei)",
+      "тимус (thymus)",
+      "лимфатические узлы (nodi lymphoidei)"
+    ],
+    "correct": [
+      1,
+      2,
+      4
+    ],
+    "source": "Большой PDF · стр. 429",
+    "category": "Иммунитет и лимфа",
+    "origin": "new"
+  },
+  {
+    "id": "pdf-196-1",
+    "question": "Треугольник подъязычного нерва (trigonum n.hypoglossi):",
+    "options": [
+      "лежит рядом с медиальным возвышением (eminentia medialis)",
+      "ограничен срединной бороздой (sulcus medianus)",
+      "лежит латерально от треугольника блуждающего нерва (trigonum n.vagi)",
+      "является продолжением медиального возвышения (eminentia medialis)",
+      "находится в латеральном углу ромбовидной ямки (fossa rhomboidea)"
+    ],
+    "correct": [
+      1,
+      3
+    ],
+    "source": "Большой PDF · стр. 196",
+    "category": "Язык",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-200-2",
+    "question": "К чувствительным ядрам тройничного нерва (n. trigeminus (V)) относятся:",
+    "options": [
+      "среднемозговое ядро тройничного нерва (nucleus mesencephalicus n. trigemini)",
+      "двойное ядро (nucleus ambiguus)",
+      "главное ядро тройничного нерва (nucleus principalis n. trigemini)",
+      "спинномозговое ядро тройничного нерва (nucleus spinalis n. trigemini)",
+      "ядро одиночного пути (nucleus tractus solitarii)"
+    ],
+    "correct": [
+      0,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 200",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-207-3",
+    "question": "Ветви тройничного нерва (n. trigeminus) выходят из черепа через следующие отверстия:",
+    "options": [
+      "круглое отверстие (foramen rotundum)",
+      "овальное отверстие (foramen ovale)",
+      "верхняя глазничная щель (fissura orbitalis superior)",
+      "нижняя глазничная щель (fissura orbitalis inferior)",
+      "остистое отверстие (foramen spinosum)"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 207",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-207-4",
+    "question": "Ядрами тройничного нерва (n. trigeminus) являются:",
+    "options": [
+      "верхнее слюноотделительное ядро (nucleus salivatorius superior)",
+      "главное ядро тройничного нерва (nucleus principalis n. trigemini)",
+      "ядро одиночного пути (nucleus tractus solitarii)",
+      "спинномозговое ядро тройничного нерва (nucleus spinalis n. trigemini)",
+      "двойное ядро (nucleus ambiguus)"
+    ],
+    "correct": [
+      1,
+      3
+    ],
+    "source": "Большой PDF · стр. 207",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-208-5",
+    "question": "Главное ядро тройничного нерва (nucleus principalis n. trigemini) проецируется в ромбовидной ямке (fossa rhomboidea):",
+    "options": [
+      "выше мозговых полосок четвертого желудочка (striae medullares ventriculi quarti)",
+      "ниже мозговых полосок четвертого желудочка (striae medullares ventriculi quarti)",
+      "в области верхней ямки (fovea superior)",
+      "в области нижней ямки (fovea inferior)",
+      "латеральнее срединного возвышения (eminentia medialis)"
+    ],
+    "correct": [
+      0,
+      2,
+      4
+    ],
+    "source": "Большой PDF · стр. 208",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-209-6",
+    "question": "Правильным названием для двигательного ядра лицевого нерва (n. facialis VII)) является:",
+    "options": [
+      "ядро одиночного пути (nucleus tractus solitarii)",
+      "двойное ядро (nucleus ambiguus)",
+      "верхнее слюноотделительное ядро (nucleus salivatorius superior)",
+      "ядро лицевого нерва (nucleus nervi facialis)",
+      "нижнее слюноотделительное ядро (nucleus salivatorius inferior)"
+    ],
+    "correct": [
+      3
+    ],
+    "source": "Большой PDF · стр. 209",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-209-7",
+    "question": "Какое образование в черепе служит местом выхода лицевого нерва (n. facialis (VII))?",
+    "options": [
+      "верхняя глазничная щель (fissura orbitalis superior)",
+      "нижняя глазничная щель (fissura orbitalis inferior)",
+      "круглое отверстие (foramen rotundum)",
+      "шилососцевидное отверстие (foramen stylomastoideum)",
+      "остистое отверстие (foramen spinosum)"
+    ],
+    "correct": [
+      3
+    ],
+    "source": "Большой PDF · стр. 209",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-210-8",
+    "question": "Ядрами лицевого нерва (n. facialis (VII)) являются:",
+    "options": [
+      "верхнее слюноотделительное ядро (nucleus salivatorius superior)",
+      "улитковые ядра (nuclei cochleares)",
+      "ядра одиночного пути (nuclei tractus solitarii)",
+      "двойное ядро (nucleus ambiguus)",
+      "ядро лицевого нерва (nucleus nervi facialis)"
+    ],
+    "correct": [
+      0,
+      2,
+      4
+    ],
+    "source": "Большой PDF · стр. 210",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-211-9",
+    "question": "Что верно по отношению к поднижнечелюстному узлу (ganglion submandibulare)?",
+    "options": [
+      "вегетативный, в нем переключаются парасимпатические волокна",
+      "находится в крыловиднонебной ямке (fossa pterygopalatina)",
+      "преганглионарные волокна идут к узлу от добавочного ядра глазодвигательного нерва (nucleus accessorius n. oculomotorii)",
+      "преганглионарные волокна идут к узлу от верхнего слюноотделительного ядра (nucleus salivatorius superior)",
+      "преганглионарные волокна идут к узлу от нижнего слюноотделительного ядра (nucleus salivatorius inferior)"
+    ],
+    "correct": [
+      0,
+      3
+    ],
+    "source": "Большой PDF · стр. 211",
+    "category": "Железы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-213-10",
+    "question": "Где находится место выхода из мозга языкоглоточного нерва (n. glossopharyngeus (IX))?",
+    "options": [
+      "передняя срединная щель (fissura mediana anterior)",
+      "переднебоковая борозда (sulcus anterolateralis)",
+      "заднеднебоковая борозда (sulcus posterolateralis)",
+      "задняя промежуточная борозда (sulcus intermedius posterior)",
+      "задняя срединная борозда (sulcus medianus posterior)"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Большой PDF · стр. 213",
+    "category": "Глотка и зев",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-214-11",
+    "question": "Ядрами языкоглоточного нерва (n. glossopharyngeus (IX)) являются:",
+    "options": [
+      "верхнее слюноотделительное ядро (nucleus salivatorius superior)",
+      "нижнее слюноотделительное ядро (nucleus salivatorius inferior)",
+      "ядра одиночного пути (nuclei tractus solitarii)",
+      "преддверные ядра (nuclei vestibulares)",
+      "двойное ядро (nucleus ambiguus)"
+    ],
+    "correct": [
+      1,
+      2,
+      4
+    ],
+    "source": "Большой PDF · стр. 214",
+    "category": "Глотка и зев",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-215-12",
+    "question": "Ядрами блуждающего нерва (n. vagus (X)) являются:",
+    "options": [
+      "дорзальное ядро блуждающего нерва (nucleus dorsalis n. vagi)",
+      "нижнее слюноотделительное ядро (nucleus salivatorius inferior)",
+      "ядра одиночного пути (nuclei tractus solitarii)",
+      "преддверные ядра (nuclei vestibulares)",
+      "двойное ядро (nucleus ambiguus)"
+    ],
+    "correct": [
+      0,
+      2,
+      4
+    ],
+    "source": "Большой PDF · стр. 215",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-215-13",
+    "question": "Где находится место выхода из мозга блуждающего нерва (n. vagus (X))?",
+    "options": [
+      "передняя срединная щель (fissura mediana anterior)",
+      "переднебоковая борозда (sulcus anterolateralis)",
+      "заднеднебоковая борозда (sulcus posterolateralis)",
+      "задняя промежуточная борозда (sulcus intermedius posterior)",
+      "задняя срединная борозда (sulcus medianus posterior)"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Большой PDF · стр. 215",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-218-14",
+    "question": "Где находится место выхода из мозга подъязычного нерва (n. hypoglossus (XII))?",
+    "options": [
+      "передняя срединная щель (fissura mediana anterior)",
+      "переднебоковая борозда (sulcus anterolateralis)",
+      "заднеднебоковая борозда (sulcus posterolateralis)",
+      "задняя промежуточная борозда (sulcus intermedius posterior)",
+      "задняя срединная борозда (sulcus medianus posterior)"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Большой PDF · стр. 218",
+    "category": "Язык",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-218-15",
+    "question": "Что верно по отношению к ядру подъязычного нерва (n. hypoglossus (XII))?",
+    "options": [
+      "проецируется в ромбовидной ямке (fossa rhomboidea) в треугольнике подъязычного нерва (trigonum nervi hypoglossi)",
+      "является чувствительным",
+      "является вегетативным",
+      "является двигательным",
+      "отростки клеток переключаются в подъязычном узле (ganglion sublinguale)"
+    ],
+    "correct": [
+      0,
+      3
+    ],
+    "source": "Большой PDF · стр. 218",
+    "category": "Язык",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-283-16",
+    "question": "Тройнично-таламический путь (tr. trigeminothalamicus) проводит импульсы от:",
+    "options": [
+      "экстерорецепторов кожи лица",
+      "экстерорецепторов кожи",
+      "проприорецепторов мимических и жевательных мышц лица",
+      "проприорецепторов мышц верхних конечностей",
+      "проприорецепторов мышц нижних конечностей"
+    ],
+    "correct": [
+      0,
+      2
+    ],
+    "source": "Большой PDF · стр. 283",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-283-17",
+    "question": "Первый нейрон тройнично-таламического пути (tr. trigeminothalamicus) расположен в узле:",
+    "options": [
+      "тройничном (g. trigeminale)",
+      "ресничном (g. ciliare)",
+      "спинномозговом (g. spinale)",
+      "крылонебном (g. pterygopalatinum)",
+      "коленчатом (g. geniculi)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 283",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-284-18",
+    "question": "Сколько нейронов включает тройнично-таламический путь (tr. trigeminothalamicus)?",
+    "options": [
+      "2 нейрона",
+      "3 нейрона",
+      "4 нейрона",
+      "5 нейрона",
+      "6 нейрона"
+    ],
+    "correct": [
+      1
+    ],
+    "source": "Большой PDF · стр. 284",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Отмечено [+] в PDF"
+  },
+  {
+    "id": "pdf-306-19",
+    "question": "Парасимпатическая часть блуждающего нерва (n.vagus) в стволе мозга представлена:",
+    "options": [
+      "дорсальным ядром (nucleus dorsalis)",
+      "двойным ядром (nucleus ambiguus)",
+      "нижним слюноотделительным ядром( nucleus salivatorius inf.)",
+      "верхним слюноотделительным ядром (nucleus salivatorius sup.)",
+      "добавочным ядром (Якубовича) (nucleus accessorius)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 306",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-307-20",
+    "question": "Анатомические структуры, иннервируемые из ресничного узла (ganglion ciliare):",
+    "options": [
+      "ресничная мышца (m.ciliaris)",
+      "мышца, суживающая зрачок (m.sphincter pupillae)",
+      "слёзная железа (glandula lacrimalis)",
+      "мышца, расширяющая зрачок (m.dilatator pupillae)",
+      "околоушная железа (glandula parotidea)"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 307",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-307-21",
+    "question": "Мышца, суживающая зрачок (m. sphincter pupillae) и ресничная мышца (m. ciliaris) получают парасимпатическую иннервацию из:",
+    "options": [
+      "ресничного узла (ganglion ciliare)",
+      "ушного узла (ganglion oticum)",
+      "крылонебного узла (ganglion pterygopalatininum)",
+      "поднижнечелюстного узла (ganglion submandibulare)",
+      "подъязычного узла (ganglion sublinguale)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 307",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-307-22",
+    "question": "Преганглионарные парасимпатические волокна к ресничному узлу (ganglion ciliare) следуют в составе:",
+    "options": [
+      "глазодвигательного нерва (n.oculomotorius)",
+      "тройничного нерва (n.trigeminus)",
+      "блокового нерва (n.trochlearis)",
+      "зрительного нерва (n.opticus)",
+      "отводящего нерва (n.abducens)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 307",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-308-23",
+    "question": "Преганглионарные парасимпатические волокна к поднижнечелюстному и подъязычному узлам (ganglia submandibulare et sublinguale) следуют в составе:",
+    "options": [
+      "барабанной струны (chorda tympani)",
+      "большого каменистого нерва (n. petrosus major)",
+      "малого каменистого нерва (n. petrosus minor)",
+      "барабанного нерва (n. tympanicus)",
+      "ушно-височного нерва (n. auriculotemporalis)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 308",
+    "category": "Железы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-309-24",
+    "question": "Парасимпатические волокна к поднижнечелюстной и подъязычной железам переключаются в:",
+    "options": [
+      "поднижнечелюстном узле (ganglion submandibulare)",
+      "крылонёбном узле (ganglion pterygopalatinum)",
+      "ушном узле (ganglion oticum)",
+      "узле коленца (ganglion geniculi)",
+      "ресничном узле (ganglion ciliare)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 309",
+    "category": "Железы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-310-25",
+    "question": "Околоушная слюнная железа (glandula parotidea) получает парасимпатическую иннервацию из:",
+    "options": [
+      "ушного узла (ganglion oticum)",
+      "подъязычного узла (ganglion submandibulare)",
+      "ресничного узла (ganglion ciliare)",
+      "крыловидно-нёбного узла (ganglion pterygopalatinum0",
+      "узла тройничного нерва (ganglion trigeminale)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 310",
+    "category": "Железы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-311-26",
+    "question": "Преганглионарные парасимпатические волокна к ушному узлу (ganglion oticum) берут начало от:",
+    "options": [
+      "нижнего слюноотделительного ядра (nucleus salivatorius inf.)",
+      "верхнего слюноотделительного ядра (nucleus salivatorius sup.)",
+      "дорсального ядра блуждающего нерва (nucleus dorsalis n.vagi)",
+      "латерального коленчатого тела (corpus geniculatum laterale)",
+      "крылонёбного узла (ganglion pterygopalatinum)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 311",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-311-27",
+    "question": "Парасимпатические волокна к ушному узлу (ganglion oticum) проходят в составе:",
+    "options": [
+      "малого каменистого нерва (n. petrosus minor)",
+      "большого каменистого нерва (n. petrosus major)",
+      "скулового нерва (n. zygomaticus)",
+      "язычного нерва (n. lingualis)",
+      "барабанной струны (chorda tympani)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 311",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-312-28",
+    "question": "Преганглионарные парасимпатические волокна к ушному узлу (ganglion oticum) идут в составе:",
+    "options": [
+      "языкоглоточного нерва (n. glossopharyngeus)",
+      "барабанного нерва (n. tympanicus)",
+      "малого каменистого нерва (n. petrosus minor)",
+      "ушно-височного нерва (n. auriculotemporalis)",
+      "нижнечелюстного нерва (n. mandibularis)"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 312",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-312-29",
+    "question": "Из дорсального ядра блуждающего нерва (nucleus dorsalis n. vagi) получают иннервацию:",
+    "options": [
+      "глотка (pharynx)",
+      "поперечная ободочная кишка (colon transversum)",
+      "пищевод (oesophagus)",
+      "желудок (gaster)",
+      "сигмовидная кишка (colon sigmoideum)"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 312",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-320-31",
+    "question": "Слезная железа расположена в:",
+    "options": [
+      "латеральном углу глазницы",
+      "медиальном углу глазницы",
+      "толще век",
+      "влагалище глазного яблока",
+      "вокруг зрительного нерва"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 320",
+    "category": "Железы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-323-32",
+    "question": "Сокращение ресничной мышцы (m. ciliaris) обеспечивают постганглионарные парасимпатические волокна, образованные аксонами нейронов:",
+    "options": [
+      "ресничного узла (g. ciliare)",
+      "тройничного узла (g. trigeminale)",
+      "звездчатого узла (g. stellatum)",
+      "крылонебного узла (g. pterygopalatinum)",
+      "верхнего шейного узла (g. cervicale superius)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 323",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-336-34",
+    "question": "Тройничный нерв (n. trigeminus) связан со следующими вегетативными узлами:",
+    "options": [
+      "ресничным узлом (ganglion ciliare)",
+      "крылонебным узлом (ganglion pterygopalatinum)",
+      "ушным узлом (ganglion otucum)",
+      "поднижнечелюстным узлом (ganglion submandibulare)",
+      "тройничным узлом (ganglion trigeminale)"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 336",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-336-35",
+    "question": "Преганглионарные парасимпатические волокна идут к крылонебному узлу (ganglion pterygopalatinum) в составе:",
+    "options": [
+      "большого каменистого нерва (n. petrosus major)",
+      "малого каменистого нерва (n. petrosus minor)",
+      "барабанной струны (chorda tympani)",
+      "глубокого каменистого нерва (n. petrosus profundus)",
+      "лицевого нерва (n. facialis)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 336",
+    "category": "Полость рта и нёбо",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-342-36",
+    "question": "Парасимпатические (секреторные) волокна большого каменистого нерва (n. petrosus major) направляются к:",
+    "options": [
+      "слезной железе (glandula lacrimalis)",
+      "подъязычной железе (glandula sublingualis)",
+      "поднижнечелюстной железе (glandula submandibularis)",
+      "околоушной железе (glandula parotis)",
+      "щитовидной железе (glandula thyreoidea)"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 342",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-346-37",
+    "question": "Ушная ветвь (r. auricularis) блуждающего нерва (n. vagus):",
+    "options": [
+      "отходит от верхнего узла (ganglion superius)",
+      "проходит через сосцевидный каналец (canaliculus mastoideus)",
+      "отходит от нижнего узла (ganglion inferius)",
+      "проходит через яремное отверстие (foramen jugulare)",
+      "проходит через околоушную железу (glandula parotis)"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 346",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Жёлтое выделение в PDF"
+  },
+  {
+    "id": "pdf-416-42",
+    "question": "Латеральная группа лимфатических сосудов верхней конечнос- ти (vasa lymphatica laterales) прходит через:",
+    "options": [
+      "подмышечные лимфатические узлы (nodi lymphoidei axillares)",
+      "локтевые лимфатические узлы (nodi lymphoidei cubitales)",
+      "нижние диафрагмальные лимфатические узлы (nodi lymphoidei phrenici inferiores)",
+      "окологрудинные лимфатические узлы (nodi lymphoidei parasternales)",
+      "поверхностные шейные лимфатические узлы (nodi lymphoidei cervicales superficiales)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 416",
+    "category": "Иммунитет и лимфа",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-430-44",
+    "question": "Грудной лимфатический проток (ductus lymphaticus thoracicus):",
+    "options": [
+      "формируется на уровне XI грудного и II поясничного позвон- ков (Th11-L2)",
+      "формируется на уровне X–XII грудных позвонков (Th10-Th12)",
+      "впадает в левый венозный угол",
+      "впадает в правый венозный угол",
+      "лежит в заднем средостении."
+    ],
+    "correct": [
+      0,
+      2
+    ],
+    "source": "Большой PDF · стр. 430",
+    "category": "Иммунитет и лимфа",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-430-45",
+    "question": "В грудном лимфатическом протоке (ductus lymphaticus thoracicus) выделяют части:",
+    "options": [
+      "брюшную часть (pars abdominalis)",
+      "дугу (arcus)",
+      "шейную часть (pars cervicalis)",
+      "грудную часть (pars thoracica)",
+      "цистерну (cisterna chyli)."
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 430",
+    "category": "Иммунитет и лимфа",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-430-46",
+    "question": "В начальный отдел грудного лимфатического протока (ductus lymphaticus thoracicus) впадают:",
+    "options": [
+      "млечная цистерна (cisterna chili)",
+      "поясничные стволы (trunci lumbales)",
+      "кишечные стволы (trunci intestinales)",
+      "правый лимфатический проток (ductus lymphaticus dexter)",
+      "бронхосредостенные стволы (trunci bronchomediastinales)."
+    ],
+    "correct": [
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 430",
+    "category": "Иммунитет и лимфа",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-431-47",
+    "question": "В правый лимфатический проток (ductus lymphaticus dexter) впа- дают:",
+    "options": [
+      "правый бронхосредостенный ствол (truncus bronchomediastinalis dexter)",
+      "правый поясничный ствол (truncus lumbalis dexter)",
+      "правый яремный ствол (truncus jugularis dexter)",
+      "левый бронхосредостенный ствол (truncus bronchomediastinalis sinister)",
+      "правый подключичный ствол (truncus subclavius dexter)."
+    ],
+    "correct": [
+      0,
+      2,
+      4
+    ],
+    "source": "Большой PDF · стр. 431",
+    "category": "Иммунитет и лимфа",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-438-48",
+    "question": "Ресничный узел (ganglion ciliare) связан с:",
+    "options": [
+      "глазодвигательным нервом (n. oculomotorius)",
+      "скуловым нервом (n. zygomaticus)",
+      "глазным нервом (n. ophthalmicus)",
+      "отводящим нервом (n. abducens)",
+      "блоковым нервом (n. trochlearis)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 438",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-438-49",
+    "question": "Постганглионарные парасимпатические волокна из ресничного узла (ganglion ciliare) проходят в составе:",
+    "options": [
+      "коротких ресничных нервов (nn. ciliares breves)",
+      "слезного нерва (n. lacrimalis)",
+      "малого каменистого нерва (n. petrosus minor)",
+      "большого каменистого нерва (n. petrosus major)",
+      "малых небных нервов (nn. palatini minores). 9"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 438",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-439-50",
+    "question": "Через ресничный узел (ganglion ciliare) транзитом (не переклю- чаясь) проходят:",
+    "options": [
+      "симпатические волокна от глазного сплетения (ветви plexus caroticus internus, идущие вдоль a. ophthalmica)",
+      "чувствительные волокна в составе носоресничного нерва (n. nasociliaris)",
+      "парасимпатические волокна от глазодвигательного нерва (n. oculomotorius)",
+      "парасимпатические волокна от большого каменистого нерва (n. petrosus major)",
+      "симпатические волокна от наружного сонного сплетения (plexus caroticus externus)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 439",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-441-51",
+    "question": "Преганглионарные парасимпатические волокна большого ка- менистого нерва (n. petrosus major) переключаются в:",
+    "options": [
+      "крылонебном узле (ganglionpterygopalatinum)",
+      "ушном узле (ganglion oticum)",
+      "ресничном узле (ganglion ciliare)",
+      "подъязычном узле (ganglion sublinguale)",
+      "нижнем узле языкоглоточного нерва (ganglion inferius n. glossopharyngei)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 441",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-450-53",
+    "question": "Слезная железа (glandula lacrimalis) расположена в:",
+    "options": [
+      "латеральном углу глазницы",
+      "медиальном углу глазницы",
+      "толще век",
+      "влагалище глазного яблока (vagina bulba)",
+      "вокруг зрительного нерва (n. opticus)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 450",
+    "category": "Железы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-451-54",
+    "question": "Постганглионарные парасимпатические волокна, иннервирую- щие мышцу, суживающую зрачок (m. sphincter pupillae), образо- ваны аксонами нейронов:",
+    "options": [
+      "ресничного узла (ganglion ciliare)",
+      "тройничного узла (ganglion trigeminale)",
+      "звездчатого узла (ganglion stellatum)",
+      "крылонебного узла (ganglion pterygopalatinum)",
+      "верхнего шейного узла (ganglion cervicale superius)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 451",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-457-55",
+    "question": "Рядом с глоточным отверстием слуховой трубы (ostium pharyngeum tubae auditivae) находятся:",
+    "options": [
+      "трубный валик (torustubarius)",
+      "трубная миндалина (tonsilla tubaria)",
+      "трубные железы (glandulae tubariae)",
+      "небно­язычная дужка (arcus palatoglossus)",
+      "небно­глоточная дужка (arcus palatopharyngeus)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 457",
+    "category": "Глотка и зев",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-466-57",
+    "question": "Двигательный корешок тройничного нерва (n. trigeminus) ин- нервирует:",
+    "options": [
+      "височную мышцу (m. temporalis)",
+      "челюстно­подъязычную мышцу (m. mylohyoideus)",
+      "круговую мышцу рта (m. orbicularis oris)",
+      "шилоподъязычную мышцу (m. stylohyoideus)",
+      "подбородочно­подъязычную мышцу (m. geniohyoideus). 37"
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 466",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-467-58",
+    "question": "Ветвями глазного нерва (n. ophthalmicus) являются:",
+    "options": [
+      "возвратная оболочечная ветвь (r. meningeus recurrens)",
+      "носоресничный нерв (n. nasociliaris)",
+      "лобный нерв (n. frontalis)",
+      "слезный нерв (n. lacrimalis)",
+      "менингеальная ветвь (r. meningeus)."
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 467",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-471-59",
+    "question": "Лицевой нерв (n. facialis):",
+    "options": [
+      "выходит из ствола на заднем крае моста, впереди и латерально от оливы",
+      "проходит через околоушную железу (glandula parotis)",
+      "является секреторным нервом для слезной железы (glandula lacrimalis)",
+      "выходит из ствола в области продолговатого мозга",
+      "иннервирует жевательные мышцы (m. masticatorii)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 471",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-472-61",
+    "question": "Малый каменистый нерв (n. petrosus minor):",
+    "options": [
+      "является продолжением барабанного нерва (n. tympanicus)",
+      "идет к ушному узлу (ganglion oticum)",
+      "выходит из полости черепа через яремное отверстие (foramen jugulare)",
+      "выходит из полости черепа через шилососцевидное отверстие (foramen stylomastoideum)",
+      "идет к узлу коленца (ganglion geniculi)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 472",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-473-62",
+    "question": "Нижний гортанный нерв (n. laryngeus inferior) иннервирует:",
+    "options": [
+      "щитовидно­черпаловидную мышцу (m. thyroarytenoideus)",
+      "голосовую мышцу (m. vocalis)",
+      "слизистую оболочку гортани ниже голосовой щели",
+      "перстнещитовидную мышцу (m. cricothyroideus)",
+      "слизистую оболочку гортани выше голосовой щели. 44"
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 473",
+    "category": "Гортань",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-474-63",
+    "question": "Блуждающий нерв (n. vagus) иннервирует твердую мозговую оболочку:",
+    "options": [
+      "задней черепной ямки (fossa cranii posterior)",
+      "передней черепной ямки (fossa cranii anterior)",
+      "средней черепной ямки (fossa cranii media)",
+      "серп мозга (falx cerebri)",
+      "палатки мозжечка (tentorium cerebelli)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 474",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "Галочки  в PDF"
+  },
+  {
+    "id": "pdf-128-64",
+    "question": "Из головной (глоточной) кишки развиваются:",
+    "options": [
+      "задний проход",
+      "ротовая полость",
+      "толстая кишка",
+      "тонкая кишка",
+      "пищевод",
+      "зев",
+      "желудок",
+      "глотка"
+    ],
+    "correct": [
+      1,
+      5,
+      7
+    ],
+    "source": "Большой PDF · стр. 128",
+    "category": "Глотка и зев",
+    "origin": "new",
+    "keyMethod": "Красный цвет правильных ответов в PDF"
+  },
+  {
+    "id": "pdf-134-73",
+    "question": "Мышечная оболочка пищевода представлена:",
+    "options": [
+      "двумя спиральными слоями",
+      "внутренним продольным и наружным циркулярным слоями",
+      "внутренним циркулярным и наружным продольным слоями",
+      "внутренним косым и наружным продольным слоями"
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Большой PDF · стр. 134",
+    "category": "Глотка и зев",
+    "origin": "new",
+    "keyMethod": "Красный цвет правильных ответов в PDF"
+  },
+  {
+    "id": "pdf-135-75",
+    "question": "Перешеек зева ограничен:",
+    "options": [
+      "верхушкой языка",
+      "нёбно-язычными дужками",
+      "глоточной миндалиной",
+      "твердым нёбом",
+      "мягким нёбом"
+    ],
+    "correct": [
+      1,
+      4
+    ],
+    "source": "Большой PDF · стр. 135",
+    "category": "Глотка и зев",
+    "origin": "new",
+    "keyMethod": "Красный цвет правильных ответов в PDF"
+  },
+  {
+    "id": "pdf-136-76",
+    "question": "Зев ограничен:",
+    "options": [
+      "преддверными складками гортани",
+      "трубным валиком",
+      "мягким нёбом",
+      "нёбно-язычными дужками"
+    ],
+    "correct": [
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 136",
+    "category": "Глотка и зев",
+    "origin": "new",
+    "keyMethod": "Красный цвет правильных ответов в PDF"
+  },
+  {
+    "id": "pdf-137-78",
+    "question": "К мышцам мягкого нёба относятся:",
+    "options": [
+      "m. palatoglossus",
+      "m. tensor tympani",
+      "m. levator veli palatini",
+      "m. palatopharyngeus",
+      "m. tensor veli palatini",
+      "m. levator anguli oris",
+      "m. hyoglossus"
+    ],
+    "correct": [
+      0,
+      2,
+      3,
+      4
+    ],
+    "source": "Большой PDF · стр. 137",
+    "category": "Полость рта и нёбо",
+    "origin": "new",
+    "keyMethod": "Красный цвет правильных ответов в PDF"
+  },
+  {
+    "id": "pdf-381-marked-box-4",
+    "question": "К конечным ветвям наружной сонной артерии (a. carotis externa) относятся:",
+    "options": [
+      "поверхностная височная артерия (a. temporalis superficialis)",
+      "верхнечелюстная артерия (a. maxillaris)",
+      "надглазничная артерия (a. supraorbitalis)",
+      "подглазничная артерия (a. infraorbitalis)",
+      "верхняя щитовидная артерия (a. thyroidea superior)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 381",
+    "category": "Сосуды головы и шеи",
+    "origin": "new",
+    "keyMethod": "marked-box"
+  },
+  {
+    "id": "pdf-388-marked-box-18",
+    "question": "Ветви щитошейного ствола (truncus thyrocervicalis):",
+    "options": [
+      "надлопаточная артерия (a. suprascapularis)",
+      "нижняя щитовидная артерия (a. thyroidea inferior)",
+      "восходящая шейная артерия (a. cervicalis ascendens)",
+      "поверхностная шейная артерия (a. cervicalis superficialis)",
+      "верхняя щитовидная артерия (a. thyroidea superior)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 388",
+    "category": "Сосуды головы и шеи",
+    "origin": "new",
+    "keyMethod": "marked-box"
+  },
+  {
+    "id": "pdf-430-marked-box-29",
+    "question": "В грудной лимфатический проток (ductus lymphaticus thoracicus) впадают стволы:",
+    "options": [
+      "правый поясничный ствол (truncus lumbalis)",
+      "правый бронхосредостенный ствол (truncus bronchomediastinalis dexter)",
+      "левый бронхосредостенный ствол (truncus bronchomediastinalis sinister)",
+      "правый подключичный ствол (truncus subclavius dexter)",
+      "левый подключичный ствол (truncus subclavius sinister)."
+    ],
+    "correct": [
+      0,
+      2,
+      4
+    ],
+    "source": "Большой PDF · стр. 430",
+    "category": "Иммунитет и лимфа",
+    "origin": "new",
+    "keyMethod": "marked-box"
+  },
+  {
+    "id": "pdf-465-marked-box-67",
+    "question": "Ветвями тройничного нерва (n. trigeminus) являются:",
+    "options": [
+      "верхнечелюстной нерв (n. maxillaris)",
+      "нижнечелюстной нерв (n. mandibularis)",
+      "глазной нерв (n. ophthalmicus)",
+      "глазодвигательный нерв (n. oculomotorius)",
+      "лицевой нерв (n. facialis)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 465",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "marked-box"
+  },
+  {
+    "id": "pdf-474-marked-box-96",
+    "question": "Ушная ветвь (r. auricularis) блуждающего нерва (n. vagus) иннервирует:",
+    "options": [
+      "кожу задней стенки наружного слухового прохода",
+      "часть поверхности ушной раковины (auricula)",
+      "барабанную перепонку (membrana tympanica)",
+      "околоушную железу (glandula parotidea)",
+      "твердую мозговую оболочку (dura mater)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 474",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "marked-box"
+  },
+  {
+    "id": "pdf-505-marked-box-101",
+    "question": "Треугольник блуждающего нерва (trigonum n. vagi, X):",
+    "options": [
+      "лежит рядом со срединным возвышением (eminentia medialis)",
+      "находится в нижнем углу ромбовидной ямки (fossa rhomboidea)",
+      "ограничен срединной бороздой (sulcus medianus)",
+      "лежит медиально от треугольника подъязычного нерва (trigonum n. hypoglossi, XII)",
+      "является частью медиального возвышения (eminentia medialis)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 505",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "marked-box"
+  },
+  {
+    "id": "pdf-507-marked-box-103",
+    "question": "Ядрами тройничного нерва (nucleus n. trigemini, V) являются:",
+    "options": [
+      "спинномозговое ядро (nucleus spinalis)",
+      "главное ядро (nucleus principalis)",
+      "верхнее слюноотделительное ядро (nucleus salivatorius superior)",
+      "ядро одиночного пути (nucleus tractus solitarii)",
+      "двойное ядро (nucleus ambiguus)."
+    ],
+    "correct": [
+      0,
+      1
+    ],
+    "source": "Большой PDF · стр. 507",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "marked-box"
+  },
+  {
+    "id": "pdf-508-marked-box-105",
+    "question": "Ядро лицевого нерва (nucleus n. facialis, VII) проецируется в ромбовидной ямке (fossarhomboidea):",
+    "options": [
+      "на лицевом холмике (colliculus facialis)",
+      "на мозговых полосках четвертого желудочка (striae medullares ventriculi quarti)",
+      "в преддверном поле (area vestibularis)",
+      "в верхней ямке (fovea superior)",
+      "в нижней ямке (fovea inferior)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 508",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "marked-box"
+  },
+  {
+    "id": "pdf-509-marked-box-106",
+    "question": "Местом выхода из мозга языкоглоточного нерва (n.glossopharyngeus, IX) является:",
+    "options": [
+      "заднеднебоковая борозда (sulcus posterolateralis)",
+      "передняя срединная щель (fissura mediana anterior)",
+      "переднебоковая борозда (sulcus anterolateralis)",
+      "задняя промежуточная борозда (sulcus intermedius posterior)",
+      "задняя срединная борозда (sulcus medianus posterior)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 509",
+    "category": "Глотка и зев",
+    "origin": "new",
+    "keyMethod": "marked-box"
+  },
+  {
+    "id": "pdf-510-marked-box-108",
+    "question": "Ядрами блуждающего нерва (nuclei n. vagi, X) являются:",
+    "options": [
+      "дорсальное ядро блуждающего нерва (nucleus dorsalis n. vagi, X)",
+      "ядра одиночного пути (nuclei tractus solitarii)",
+      "двойное ядро (nucleus ambiguus)",
+      "нижнее слюноотделительное ядро (nucleus salivatorius inferior)",
+      "преддверные ядра (nuclei vestibulares)."
+    ],
+    "correct": [
+      0,
+      1,
+      2
+    ],
+    "source": "Большой PDF · стр. 510",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "marked-box"
+  },
+  {
+    "id": "pdf-510-marked-box-109",
+    "question": "Местом выхода из мозга блуждающего нерва (n. vagus, X) является:",
+    "options": [
+      "передняя срединная щель (fissura mediana anterior)",
+      "переднебоковая борозда (sulcus anterolateralis)",
+      "заднеднебоковая борозда (sulcus posterolateralis)",
+      "задняя промежуточная борозда (sulcus intermedius posterior)",
+      "задняя срединная борозда (sulcus medianus posterior)."
+    ],
+    "correct": [
+      2
+    ],
+    "source": "Большой PDF · стр. 510",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "marked-box"
+  },
+  {
+    "id": "pdf-511-marked-box-110",
+    "question": "Местом выхода из мозгаподъязычногонерва (n. hypoglossus, XII) является:",
+    "options": [
+      "переднебоковая борозда (sulcus anterolateralis)",
+      "передняя срединная щель (fissura mediana anterior)",
+      "заднеднебоковая борозда (sulcus posterolateralis)",
+      "задняя промежуточная борозда (sulcus intermedius posterior)",
+      "задняя срединная борозда (sulcus medianus posterior)."
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 511",
+    "category": "Язык",
+    "origin": "new",
+    "keyMethod": "marked-box"
+  },
+  {
+    "id": "pdf-207-marked-plus-117",
+    "question": "Что верно по отношению к крылонебному узлу (ganglion pterygopalatinum)?",
+    "options": [
+      "находится в крыловиднонебной ямке (fossa pterygopalatina)",
+      "вегетативный, в нем переключаются волокна от добавочного ядра глазодвигательного нерва (nucleus accessorius n. oculomotorii)",
+      "вегетативный, в нем переключаются волокна от верхнего слюноотделительного ядра (nucleus salivatorius superior)",
+      "вегетативный, в нем переключаются волокна от нижнего слюноотделительного ядра (nucleus salivatorius inferior)",
+      "чувствительный"
+    ],
+    "correct": [
+      0,
+      2
+    ],
+    "source": "Большой PDF · стр. 207",
+    "category": "Полость рта и нёбо",
+    "origin": "new",
+    "keyMethod": "marked-plus"
+  },
+  {
+    "id": "pdf-215-marked-plus-127",
+    "question": "Чувствительными узлами блуждающего нерва (n. vagus (X)) являются:",
+    "options": [
+      "узел коленца (ganglion geniculi)",
+      "ушной узел (ganglion oticum)",
+      "тройничный узел (ganglion trigeminale)",
+      "верхний узел (ganglion superius)",
+      "нижний узел (ganglion inferius)"
+    ],
+    "correct": [
+      3,
+      4
+    ],
+    "source": "Большой PDF · стр. 215",
+    "category": "Нервы головы и шеи",
+    "origin": "new",
+    "keyMethod": "marked-plus"
+  },
+  {
+    "id": "pdf-161-plus-sign-133",
+    "question": "Полость носа сообщается с носоглоткой посредством:",
+    "options": [
+      "хоан",
+      "клиновидно-небного отверстия",
+      "перешейка зева",
+      "входа в гортань"
+    ],
+    "correct": [
+      0
+    ],
+    "source": "Большой PDF · стр. 161",
+    "category": "Глотка и зев",
+    "origin": "new",
+    "keyMethod": "plus-sign"
+  },
+  {
+    "id": "pdf-164-red-text-24",
+    "question": "В состав глоточного лимфоидного кольца входят:",
+    "options": [
+      "язычная миндалина",
+      "трубные миндалины",
+      "глоточная миндалина",
+      "небные миндалины"
+    ],
+    "correct": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source": "Большой PDF · стр. 164",
+    "category": "Глотка и зев",
+    "origin": "new",
+    "keyMethod": "red-text"
+  },
+  {
+    "question": "Подъязычный сосочек — это:",
+    "options": [
+      "место, где открываются только малые подъязычные протоки",
+      "место, где открываются поднижнечелюстной проток и большой подъязычный проток",
+      "место, где открываются большой и малые подъязычные протоки",
+      "вкусовой сосочек языка",
+      "место, где открывается только поднижнечелюстной проток",
+      "парное возвышение на дне полости рта по бокам от уздечки языка"
+    ],
+    "correct": [
+      1,
+      5
+    ],
+    "category": "Полость рта и нёбо",
+    "id": "manual-130-3",
+    "source": "Большой PDF · стр. 130",
+    "origin": "new",
+    "keyMethod": "Визуальная сверка выделения"
+  },
+  {
+    "question": "Черепной нерв, осуществляющий двигательную иннервацию всех мышц языка (кроме нёбно-язычной мышцы), — это:",
+    "options": [
+      "подъязычный нерв (n. hypoglossus)",
+      "блоковой нерв (n. trochlearis)",
+      "отводящий нерв (n. abducens)",
+      "добавочный нерв (n. accessorius)",
+      "языкоглоточный нерв (n. glossopharyngeus)"
+    ],
+    "correct": [
+      0
+    ],
+    "category": "Язык",
+    "id": "manual-296-8",
+    "source": "Большой PDF · стр. 296",
+    "origin": "new",
+    "keyMethod": "Визуальная сверка выделения"
+  }
+];
+
+</script>
+  <script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+const el = {
+  question: $("question"), choices: $("choices"), feedback: $("feedback"), next: $("next"),
+  skip: $("skip"), reset: $("reset"), answered: $("answered"), correct: $("correct"),
+  accuracy: $("accuracy"), position: $("position"), round: $("round"), progress: $("progress"),
+  topicOptions: $("topicOptions"), topicSummary: $("topicSummary"), topicDropdown: $("topicDropdown"), selectAllTopics: $("selectAllTopics"), clearTopics: $("clearTopics"), source: $("source"), mode: $("mode"), submit: $("submit"),
+  sourceLine: $("sourceLine"), count: $("count"), studyDeck: $("studyDeck"),
+  mistakesCount: $("mistakesCount"), clearMistakes: $("clearMistakes"), empty: $("empty"),
+  quizContent: $("quizContent"), emptyMessage: $("emptyMessage")
+};
+
+const STORAGE_KEY = "anatomy_head_neck_mistakes_v1";
+const validIds = new Set(QUESTIONS.map(q => q.id));
+let mistakes = loadMistakes();
+let deck = [], index = 0, round = 0, current = null, chosen = new Set();
+let finished = false, answered = 0, correct = 0, previousId = null;
+
+function loadMistakes() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    if (Array.isArray(parsed)) return new Set(parsed.filter(id => validIds.has(id)));
+  } catch (_) { /* Отключено хранилище — работаем до закрытия вкладки. */ }
+  return new Set();
+}
+function saveMistakes() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...mistakes])); }
+  catch (_) { /* Данные сохранятся хотя бы до перезагрузки страницы. */ }
+  updateMistakeCounter();
+}
+function updateMistakeCounter() {
+  el.mistakesCount.textContent = mistakes.size;
+  el.clearMistakes.disabled = mistakes.size === 0;
+}
+const TOPICS_KEY = "anatomy_head_neck_topics_v1";
+const topics = [...new Set(QUESTIONS.map(q => q.category))];
+function loadTopics() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(TOPICS_KEY) || "null");
+    if (Array.isArray(saved)) return new Set(saved.filter(t => topics.includes(t)));
+  } catch (_) { /* Используем все темы, если хранилище недоступно. */ }
+  return new Set(topics);
+}
+let selectedTopics = loadTopics();
+function updateTopicUI() {
+  const count = selectedTopics.size;
+  el.topicSummary.textContent = count === topics.length ? "Все темы" : count === 0 ? "Нет выбранных тем" :
+    count === 1 ? [...selectedTopics][0] : `Выбрано тем: ${count} из ${topics.length}`;
+  for (const input of el.topicOptions.querySelectorAll("input")) input.checked = selectedTopics.has(input.value);
+}
+function changeTopics(next) {
+  selectedTopics = next;
+  try { localStorage.setItem(TOPICS_KEY, JSON.stringify([...selectedTopics])); } catch (_) { /* Без сохранения. */ }
+  updateTopicUI();
+  restart();
+}
+for (const category of topics) {
+  const label = document.createElement("label");
+  label.className = "topic-option";
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.value = category;
+  input.addEventListener("change", () => {
+    const next = new Set(selectedTopics);
+    if (input.checked) next.add(category); else next.delete(category);
+    changeTopics(next);
+  });
+  const name = document.createElement("span");
+  name.textContent = category;
+  label.append(input, name);
+  el.topicOptions.append(label);
+}
+el.selectAllTopics.addEventListener("click", () => changeTopics(new Set(topics)));
+el.clearTopics.addEventListener("click", () => changeTopics(new Set()));
+updateTopicUI();
+function shuffle(a) {
+  const b = a.slice();
+  for (let i = b.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [b[i], b[j]] = [b[j], b[i]];
+  }
+  return b;
+}
+function pool() {
+  return QUESTIONS.filter(q =>
+    selectedTopics.has(q.category) &&
+    (el.source.value === "all" || q.origin === el.source.value) &&
+    (el.studyDeck.value !== "mistakes" || mistakes.has(q.id))
+  );
+}
+function newDeck() {
+  deck = shuffle(pool());
+  if (deck.length > 1 && deck[0].id === previousId) [deck[0], deck[1]] = [deck[1], deck[0]];
+  index = 0;
+  if (deck.length) round++;
+  updateCount();
+}
+function updateCount() {
+  const available = pool().length;
+  el.count.textContent = `${available} ${available % 10 === 1 && available % 100 !== 11 ? "вопрос" :
+    [2,3,4].includes(available % 10) && ![12,13,14].includes(available % 100) ? "вопроса" : "вопросов"}`;
+}
+function updateStats() {
+  el.answered.textContent = answered;
+  el.correct.textContent = correct;
+  el.accuracy.textContent = answered ? Math.round(correct / answered * 100) + "%" : "—";
+}
+function showEmpty() {
+  current = null;
+  el.quizContent.hidden = true;
+  el.empty.hidden = false;
+  el.emptyMessage.textContent = el.studyDeck.value === "mistakes"
+    ? mistakes.size === 0
+      ? "Пока нет ошибок. Отвечай на вопросы в основной колоде — неверные ответы появятся здесь автоматически."
+      : "В выбранной теме или источнике нет вопросов с ошибками. Измени фильтры либо переключись на основную колоду."
+    : selectedTopics.size === 0 ? "Выбери хотя бы одну тему, чтобы начать." : "В выбранных разделах пока нет вопросов.";
+  el.round.textContent = "Колода пуста";
+  el.position.textContent = "0 / 0";
+  el.progress.style.width = "0%";
+}
+function showQuestion() {
+  // Удалённые после правильной пересдачи вопросы не должны повторяться в колоде ошибок.
+  while (el.studyDeck.value === "mistakes" && index < deck.length && !mistakes.has(deck[index].id)) index++;
+  if (index >= deck.length) newDeck();
+  if (!deck.length) { showEmpty(); return; }
+  current = deck[index];
+  chosen = new Set();
+  finished = false;
+  el.empty.hidden = true;
+  el.quizContent.hidden = false;
+  el.round.textContent = `Круг ${round}`;
+  el.position.textContent = `${index + 1} / ${deck.length} · ${current.category}`;
+  el.progress.style.width = `${(index + 1) / deck.length * 100}%`;
+  el.question.textContent = current.question;
+  el.sourceLine.textContent = current.source;
+  el.choices.replaceChildren();
+  el.mode.textContent = current.correct.length > 1 ? "Выбери все правильные варианты" : "Выбери один правильный вариант";
+  current.options.forEach((label, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "choice";
+    b.setAttribute("aria-pressed", "false");
+    const s = document.createElement("span");
+    s.className = "letter";
+    s.textContent = i + 1;
+    const t = document.createElement("span");
+    t.textContent = label;
+    b.append(s, t);
+    b.addEventListener("click", () => choose(i));
+    el.choices.append(b);
+  });
+  el.feedback.className = "feedback";
+  el.feedback.textContent = "";
+  el.submit.hidden = current.correct.length === 1;
+  el.submit.disabled = true;
+  el.next.disabled = true;
+  el.skip.hidden = false;
+}
+function choose(i) {
+  if (finished || !current) return;
+  if (current.correct.length === 1) {
+    chosen = new Set([i]);
+    verify();
+    return;
+  }
+  if (chosen.has(i)) chosen.delete(i);
+  else chosen.add(i);
+  [...el.choices.children].forEach((b, j) => {
+    b.classList.toggle("picked", chosen.has(j));
+    b.setAttribute("aria-pressed", chosen.has(j) ? "true" : "false");
+  });
+  el.submit.disabled = chosen.size === 0;
+}
+function verify() {
+  if (finished || !current || !chosen.size) return;
+  finished = true;
+  answered++;
+  const correctSet = new Set(current.correct);
+  const isCorrect = chosen.size === correctSet.size && [...chosen].every(x => correctSet.has(x));
+  if (isCorrect) correct++;
+  if (!isCorrect) mistakes.add(current.id);
+  // Правильный ответ в основной колоде не очищает ошибки: только осознанная пересдача.
+  else if (el.studyDeck.value === "mistakes") mistakes.delete(current.id);
+  saveMistakes();
+  [...el.choices.children].forEach((b, i) => {
+    b.disabled = true;
+    b.classList.remove("picked");
+    if (correctSet.has(i)) b.classList.add("correct");
+    else if (chosen.has(i)) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+  el.feedback.className = "feedback show " + (isCorrect ? "good" : "bad");
+  const right = current.correct.map(i => `${i + 1}. ${current.options[i]}`).join("; ");
+  if (!isCorrect) {
+    el.feedback.textContent = "✕ Неверно. Правильные варианты: " + right +
+      " · Вопрос добавлен в колоду «Работа над ошибками».";
+  } else if (el.studyDeck.value === "mistakes") {
+    el.feedback.textContent = "✓ Верно! Вопрос убран из колоды ошибок.";
+  } else {
+    el.feedback.textContent = "✓ Верно!";
+  }
+  el.submit.hidden = true;
+  el.next.disabled = false;
+  el.skip.hidden = true;
+  updateStats();
+}
+function advance() {
+  if (!current) return;
+  previousId = current.id;
+  index++;
+  showQuestion();
+}
+function restart() {
+  answered = 0;
+  correct = 0;
+  round = 0;
+  previousId = null;
+  newDeck();
+  updateStats();
+  updateMistakeCounter();
+  showQuestion();
+}
+
+el.submit.addEventListener("click", verify);
+el.next.addEventListener("click", () => { if (finished) advance(); });
+el.skip.addEventListener("click", advance);
+el.reset.addEventListener("click", restart);
+el.source.addEventListener("change", restart);
+el.studyDeck.addEventListener("change", restart);
+el.clearMistakes.addEventListener("click", () => {
+  if (!mistakes.size || !confirm("Очистить всю колоду ошибок? Это действие нельзя отменить.")) return;
+  mistakes.clear();
+  saveMistakes();
+  restart();
+});
+document.addEventListener("keydown", e => {
+  if (!current || e.altKey || e.ctrlKey || e.metaKey || e.repeat ||
+      ["SELECT", "INPUT", "TEXTAREA"].includes(e.target.tagName) || e.target.tagName === "BUTTON") return;
+  const n = Number(e.key);
+  if (e.key >= "1" && e.key <= "9" && n <= current.options.length && !finished) {
+    e.preventDefault();
+    choose(n - 1);
+  } else if (e.key === "Enter") {
+    if (finished) advance();
+    else if (current.correct.length > 1 && chosen.size) verify();
+  }
+});
+restart();
+
+</script>
+</body>
+</html>
